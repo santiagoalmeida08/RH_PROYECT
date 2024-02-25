@@ -47,16 +47,24 @@ df_empl4 = df_empl3.copy()
 df_empl4['EmployeeID'] = df_empl3['EmployeeID'].astype('object')
 df_empl4['DateSurvey'] = pd.to_datetime(df_empl3['DateSurvey'],format= '%d/%m/%Y') #formato ????
 
-df_empl4 # BASE FINAL #
+df_empl5 = df_empl4.copy()
 
+"""crearemos una nueva variable en la cual se reflejara el promedio de la encuesta realizada
+a cada uno de los trabajadores"""
 
-"""#PREPROCESAMIENTO BASE requierments"""
+df_empl5.info()
+
+df_empl5['mean_survery'] = ((df_empl5['EnvironmentSatisfaction']+df_empl5['JobSatisfaction']+df_empl5['WorkLifeBalance']) /3).round(1)
+
+df_empl5
+
+"""#PREPROCESAMIENTO BASE retirement"""
 
 # CARGA DE BASE DE DATOS #
 
-requirments = 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/retirement_info.csv'
+retirements = 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/retirement_info.csv'
 
-df_req = pd.read_csv(requirments, sep= ';')
+df_req = pd.read_csv(retirements, sep= ';')
 df_req
 
 # LIMPIEZA BASE DE DATOS #
@@ -72,6 +80,44 @@ df_req1
 df_req1['retirementDate'] = pd.to_datetime(df_req1['retirementDate'], format='%d/%m/%Y')
 df_req1.info()
 
+
+#Evaluación variables categoricas#
+df_req1['Attrition'].value_counts() 
+df_req1['retirementType'].value_counts()
+df_req1['resignationReason'].value_counts()
+
+""" -La variable Attrition no presenta variabilidad por lo cual se la eliminará
+    -Convertiremosla variable retirementType a binaria """
+
+df_req2 = df_req1.copy()
+
+df_req2 = df_req2.drop(['Attrition'], axis=1)
+
+#df_req2['retirementType'] = df_req2['retirementType'].replace({'Resignation': 0, 'Fired':1}) #Causa : 0.Resignación;  1.Despido
+df_req2['retirementType'].value_counts()
+df_req2.info()
+
+df_req2
+
+#VAMOS A CREAR UNA NUEVA VARIABLE EN DONDE SE RESUMA EL TIPO DE DESPIDO; SUS CATEGORIAS SERAN#
+#FIRED,SALAY,STRESS,OTHERS
+
+df_req3 = df_req2.copy()
+
+df_req3[(df_req3['retirementType']=='Fired') & (df_req3['resignationReason'] == 'Stress')]
+"""En este caso los valores nulos se ven explicados porque los 70 empleados que fueron despedidos coinciden con los campos nulos
+de la variable resignationReason;pues al ser una variable derivada de la categoria retirmentType no va a tener datos en dicha variable"""
+
+
+"""Vamos a juntar las categorias fired,salary,stress y others en una nueva variable llamada retirement_reason """
+df_req3['resignationReason'] = df_req3['resignationReason'].fillna('Fired')
+df_req3 = df_req3.drop('retirementType', axis=1)
+
+df_req3 = df_req3.rename(columns= {'resignationReason':'retirement_reason'})
+
+df_ret4 = df_req3.copy()
+
+df_ret4 # BASE FINAL RETIREMENTS #
 
 
 """#PREPROCESAMIENTO BASE general data """
