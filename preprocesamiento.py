@@ -12,6 +12,7 @@ data_employee = 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/
 df_empl = pd.read_csv(data_employee,sep=';') ## BASE ORIGINAL ##
 
 df_empl.info() 
+
 """se puede observar que el dataframe tiene una columna sobrante que replica la funcion del EmployeeID
 por lo cual se procedera a eliminarla, ademas existen variables con datos nulos que posteriormente se analizara su situacion"""
 
@@ -52,7 +53,11 @@ df_empl4
 """#PREPROCESAMIENTO BASE requierments"""
 
 
-"""#PREPROCESAMIENTO BASE 3"""
-
-
+"""#PREPROCESAMIENTO BASE general data """
+data_general= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/general_data.csv'
+df_g1= pd.read_csv(data_general, sep=';')#base de datos
+df_g1.info()
+"""La columna unnamed: 0 cuenta las filas iniciando desde el cero, esta columna no aporta ninguna información relevante por lo cual se va eliminar"""
+df_g2= df_g1.drop('Unnamed: 0', axis=1)
+df_g2
 """#PREPROCESAMIENTO BASE 4"""
