@@ -46,10 +46,31 @@ df_empl4 = df_empl3.copy()
 df_empl4['EmployeeID'] = df_empl3['EmployeeID'].astype('object')
 df_empl4['DateSurvey'] = pd.to_datetime(df_empl3['DateSurvey'],format= '%d/%m/%Y') #formato ????
 
-df_empl4
+df_empl4 # BASE FINAL #
 
 
 """#PREPROCESAMIENTO BASE requierments"""
+
+# CARGA DE BASE DE DATOS #
+
+requirments = 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/retirement_info.csv'
+
+df_req = pd.read_csv(requirments, sep= ';')
+df_req
+
+# LIMPIEZA BASE DE DATOS #
+
+df_req.info() 
+
+''' Se deben borrar las columnas 1 y 2; ademas tratar los datos nulos de la variable resignationReason  
+y pasar retirementDate a formato fecha '''
+
+df_req1 = df_req.drop(['Unnamed: 0.1','Unnamed: 0'], axis= 1)
+df_req1
+
+df_req1['retirementDate'] = pd.to_datetime(df_req1['retirementDate'], format='%d/%m/%Y')
+df_req1.info()
+
 
 
 """#PREPROCESAMIENTO BASE 3"""
