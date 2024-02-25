@@ -75,10 +75,35 @@ df_req1.info()
 
 
 """#PREPROCESAMIENTO BASE general data """
+#Carga base de datos 
 data_general= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/general_data.csv'
 df_g1= pd.read_csv(data_general, sep=';')#base de datos
+#Limpieza base de datos
 df_g1.info()
 """La columna unnamed: 0 cuenta las filas iniciando desde el cero, esta columna no aporta ninguna información relevante por lo cual se va eliminar"""
 df_g2= df_g1.drop('Unnamed: 0', axis=1)
 df_g2
-"""#PREPROCESAMIENTO BASE 4"""
+df_g2[df_g2.isnull().any(axis=1)]#analisis de datos nulos 
+df_g2.isnull().sum()
+"""Hay 56 datos nulos que pertenecen a las columnas de NumCompaniesWorked y TotalWorkingYears debido a que el numero de nulos es pequeño respecto a la cantidad 
+de datos que contiene la base de datos y ademas es importante conocer la información de todos los empleados por lo cual por ahora no se van a eliminar las filas 
+que contienen estos datos nulos """
+
+df_g2[df_g2.duplicated()]#filtra duplicados 
+#no se encuentran datos duplicados
+
+"""#PREPROCESAMIENTO BASE manager survey """ 
+#Carga base de datos 
+data_manager= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/manager_survey.csv'
+df_man1= pd.read_csv(data_manager, sep=';')#base de datos
+#Limpieza base de datos
+df_man1.info()
+"""La columna unnamed: 0 cuenta las filas iniciando desde el cero, esta columna no aporta ninguna información relevante por lo cual se va eliminar"""
+df_man2= df_man1.drop('Unnamed: 0', axis=1)
+df_man2
+df_man2.isnull().sum()#analisis de datos nulos 
+"""La base no contiene datos nulos"""
+
+
+df_man2[df_man2.duplicated()]#filtra duplicados 
+#no se encuentran datos duplicados
