@@ -137,6 +137,11 @@ que contienen estos datos nulos """
 
 df_g2[df_g2.duplicated()]#filtra duplicados 
 #no se encuentran datos duplicados
+df_g3=df_g2.copy()
+df_g3
+#Como la fecha se encuentra en formato object vamos a convertirlo en formato fecha
+df_g3["InfoDate"]=pd.to_datetime(df_g3['InfoDate'], format="%d/%m/%Y")
+
 
 """#PREPROCESAMIENTO BASE manager survey """ 
 #Carga base de datos 
@@ -153,3 +158,13 @@ df_man2.isnull().sum()#analisis de datos nulos
 
 df_man2[df_man2.duplicated()]#filtra duplicados 
 #no se encuentran datos duplicados
+df_man3=df_man2.copy()
+df_man3
+#Como la fecha se encuentra en formato object vamos a convertirlo en formato fecha
+df_man3["SurveyDate"]=pd.to_datetime(df_man3['SurveyDate'], format="%d/%m/%Y")
+
+
+
+
+
+
