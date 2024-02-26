@@ -141,8 +141,21 @@ df_g3=df_g2.copy()
 df_g3
 #Como la fecha se encuentra en formato object vamos a convertirlo en formato fecha
 df_g3["InfoDate"]=pd.to_datetime(df_g3['InfoDate'], format="%d/%m/%Y")
+df_g3.info()
 
 
+#ANALIZAR VARIABLES Y CATEGORIAS 
+df_g3['EmployeeCount'].value_counts() #SOLO TIENE UNA CATEGORIA POR LO CUAL SE TOMA LA DECISIÓN DE ELIMINAR ESTA VARIABLE
+df_g3['Over18'].value_counts() #solo tiene una categoria por lo cual se toma la decision de eliminar esta variable
+df_g3['StandardHours'].value_counts() # todos los valores son iguales, tambien se toma la decision de eliminar esta variable
+df_g3['StockOptionLevel'].value_counts() #Esta variable se va a convertir a variable categorica con 4 categorias
+df_g3['JobLevel'].value_counts()#esta variable se va a convertir a variable categorica con 5 categorias
+df_g3['Education'].value_counts()#Se va a convertir a una variable categorica de 5 categorias
+
+df_g4= df_g3.drop(['EmployeeCount','Over18', 'StandardHours'], axis=1)#eliminar variables que no son representativas para el analisis
+df_g4=df_g4.astype({'StockOoptionLevel': object,"JobLevel": object, "Education": object})
+
+df_g4.info()
 """#PREPROCESAMIENTO BASE manager survey """ 
 #Carga base de datos 
 data_manager= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/manager_survey.csv'
@@ -163,6 +176,9 @@ df_man3
 #Como la fecha se encuentra en formato object vamos a convertirlo en formato fecha
 df_man3["SurveyDate"]=pd.to_datetime(df_man3['SurveyDate'], format="%d/%m/%Y")
 
+#ANALISIS DE VARIABLES Y CATEGORIAS 
+df_man3.info() #No se si poner la variable de jobinvolvement y performancerating ponerlas como categoria porque es como una valoración
+df_man3['JobInvolvement'].value_counts()
 
 
 
