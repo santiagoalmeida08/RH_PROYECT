@@ -80,14 +80,12 @@ df_req1
 df_req1['retirementDate'] = pd.to_datetime(df_req1['retirementDate'], format='%d/%m/%Y')
 df_req1.info()
 
-
 #Evaluación variables categoricas#
 df_req1['Attrition'].value_counts() 
 df_req1['retirementType'].value_counts()
 df_req1['resignationReason'].value_counts()
 
-""" -La variable Attrition no presenta variabilidad por lo cual se la eliminará
-    -Convertiremosla variable retirementType a binaria """
+"""-Convertiremosla variable retirementType a binaria """
 
 df_req2 = df_req1.copy()
 
