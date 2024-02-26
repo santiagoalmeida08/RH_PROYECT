@@ -56,7 +56,9 @@ df_empl5.info()
 
 df_empl5['mean_survery'] = ((df_empl5['EnvironmentSatisfaction']+df_empl5['JobSatisfaction']+df_empl5['WorkLifeBalance']) /3).round(1)
 
-df_empl5
+df_empl5 # BASE FINAL EMPL #
+
+
 
 """#PREPROCESAMIENTO BASE retirement"""
 
@@ -78,12 +80,15 @@ df_req1 = df_req.drop(['Unnamed: 0.1','Unnamed: 0'], axis= 1)
 df_req1
 
 df_req1['retirementDate'] = pd.to_datetime(df_req1['retirementDate'], format='%d/%m/%Y')
+df_req1['EmployeeID'] = df_req1['EmployeeID'].astype('object')
 df_req1.info()
 
 #Evaluación variables categoricas#
 df_req1['Attrition'].value_counts() 
 df_req1['retirementType'].value_counts()
 df_req1['resignationReason'].value_counts()
+
+
 
 """-Convertiremosla variable retirementType a binaria """
 
@@ -151,9 +156,13 @@ df_g3['JobLevel'].value_counts()#esta variable se va a convertir a variable cate
 df_g3['Education'].value_counts()#Se va a convertir a una variable categorica de 5 categorias
 
 df_g4= df_g3.drop(['EmployeeCount','Over18', 'StandardHours'], axis=1)#eliminar variables que no son representativas para el analisis
-df_g4=df_g4.astype({'StockOoptionLevel': object,"JobLevel": object, "Education": object})
+df_g4=df_g4.astype({'EmployeeID':object,'StockOptionLevel': object,"JobLevel": object, "Education": object})
 
 df_g4.info()
+
+
+
+
 """#PREPROCESAMIENTO BASE manager survey """ 
 #Carga base de datos 
 data_manager= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/manager_survey.csv'
@@ -173,12 +182,22 @@ df_man3=df_man2.copy()
 df_man3
 #Como la fecha se encuentra en formato object vamos a convertirlo en formato fecha
 df_man3["SurveyDate"]=pd.to_datetime(df_man3['SurveyDate'], format="%d/%m/%Y")
+df_man3['EmployeeID'] = df_man3['EmployeeID'].astype('object')
 
 #ANALISIS DE VARIABLES Y CATEGORIAS 
-df_man3.info() #No se si poner la variable de jobinvolvement y performancerating ponerlas como categoria porque es como una valoración
+df_man3.info() 
 df_man3['JobInvolvement'].value_counts()
+df_man3['PerformanceRating'].value_counts()
 
 
+# UNIR BASES DE DATOS ANTERIOMENTE DEPURADAS #
 
+df_empl5
+df_ret4.info() 
+df_g4.info()
+df_man3.info()
 
+df_1 = pd.merge(df_g4,df_man3, how = 'outer', on = 'EmployeeID')    
+df_1
 
+#,df_ret4,df_g4
