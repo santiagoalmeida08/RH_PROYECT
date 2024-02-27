@@ -205,6 +205,8 @@ menos en la base de retirenment"""
 #df_merged = pd.merge(df_g4, df_empl5, how= 'left', on=['EmployeeID', 'fecha'])
 #df_1.merge(df_2, on="id", how="left").merge(df_3, on="id", how="left") UNIR VARIAS TABLAS
 
-basefinal= df_g4.merge(df_empl5, how= 'left' , on=['EmployeeID', 'fecha']).merge(ret_16, how='left', on=['EmployeeID', 'fecha']).merge(df_man3, how='left', on=['EmployeeID', 'fecha'])
+
+basefinal= df_g4.merge(df_empl5, how= 'left' , on=['EmployeeID', 'fecha']).merge(df_man3, how='left', on=['EmployeeID', 'fecha']).merge(ret_16, how='left', on='EmployeeID')    
 basefinal
+
 basefinal.to_csv('data_hr_proyect/basefinal.csv', index= False)
