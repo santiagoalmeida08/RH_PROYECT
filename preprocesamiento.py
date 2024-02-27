@@ -57,6 +57,7 @@ df_empl5.info()
 df_empl5['mean_survery'] = ((df_empl5['EnvironmentSatisfaction']+df_empl5['JobSatisfaction']+df_empl5['WorkLifeBalance']) /3).round(1)
 #Como la fecha se encuentra en formato object vamos a convertirlo en formato fecha
 df_empl5["DateSurvey"]=pd.to_datetime(df_empl5['DateSurvey'], format="%d/%m/%Y")
+df_empl5= df_empl5.rename(columns= {'DateSurvey':'fecha'})# se quiere que en todas las bases la variable fecha tenga el mismo nombre
 
 df_empl5 # BASE FINAL EMPL #
 
@@ -95,9 +96,6 @@ df_req1['resignationReason'].value_counts()
 
 df_req2 = df_req1.copy()
 
-df_req2 = df_req2.drop(['Attrition'], axis=1)
-
-#df_req2['retirementType'] = df_req2['retirementType'].replace({'Resignation': 0, 'Fired':1}) #Causa : 0.Resignación;  1.Despido
 df_req2['retirementType'].value_counts()
 df_req2.info()
 
@@ -118,8 +116,9 @@ df_req3['resignationReason'] = df_req3['resignationReason'].fillna('Fired')
 df_req3 = df_req3.drop('retirementType', axis=1)
 
 df_req3 = df_req3.rename(columns= {'resignationReason':'retirement_reason'})
-
+#
 df_ret4 = df_req3.copy()
+df_ret4 = df_ret4.rename(columns= {'retirementDate':'fecha'})# se quiere que en todas las bases la variable fecha tenga el mismo nombre
 
 df_ret4 # BASE FINAL RETIREMENTS #
 
@@ -158,6 +157,7 @@ df_g3['Education'].value_counts()#Se va a convertir a una variable categorica de
 
 df_g4= df_g3.drop(['EmployeeCount','Over18', 'StandardHours'], axis=1)#eliminar variables que no son representativas para el analisis
 df_g4=df_g4.astype({'EmployeeID':object,'StockOptionLevel': object,"JobLevel": object, "Education": object})
+df_g4= df_g4.rename(columns= {'InfoDate':'fecha'})# se quiere que en todas las bases la variable fecha tenga el mismo nombre
 
 df_g4.info()
 
@@ -184,35 +184,27 @@ df_man3
 #Como la fecha se encuentra en formato object vamos a convertirlo en formato fecha
 df_man3["SurveyDate"]=pd.to_datetime(df_man3['SurveyDate'], format="%d/%m/%Y")
 df_man3['EmployeeID'] = df_man3['EmployeeID'].astype('object')
+df_man3 = df_man3.rename(columns= {'SurveyDate':'fecha'})# se quiere que en todas las bases la variable fecha tenga el mismo nombre
 
 #ANALISIS DE VARIABLES Y CATEGORIAS 
 df_man3.info() 
 df_man3['JobInvolvement'].value_counts()
 df_man3['PerformanceRating'].value_counts()
 
-df_ret4.info()
-#SEPARAR BASES DE DATOS POR AÑO 
-#EMPLOYEE
-empl_15 = df_empl5[df_empl5['DateSurvey'].dt.year == 2015]#Base employee survey data con los datos del 2015
-empl_16 = df_empl5[df_empl5['DateSurvey'].dt.year == 2016]#Base employee survey data con los datos del 2016
-#RETIRENMENT: En esta base de datos solo se necesita la información de aquellos trabjadores que salieron en 2016 por lo cual solo traeremos los datos referentes a este año 
-ret_16 = df_ret4[df_ret4['retirementDate'].dt.year == 2016]#Base general data con los datos del 2016
 
-#GENERAL DATA
-gd_15 = df_g4[df_g4['InfoDate'].dt.year == 2015]#Base general data con los datos del 2015
-gd_16 = df_g4[df_g4['InfoDate'].dt.year == 2016]#Base general data con los datos del 2016
-#MANAGER SURVEY 
-ms_15 = df_man3[df_man3['SurveyDate'].dt.year == 2015]#Base manager survey data con los datos del 2015
-ms_16 = df_man3[df_man3['SurveyDate'].dt.year == 2016]#Base manager data con los datos del 2016
+#df_1.merge(df_2, on="id", how="left").merge(df_3, on="id", how="left") UNIR VARIAS TABLAS
+
+#Traer solo la información necesaria
+#RETIRENMENT: En esta base de datos solo se necesita la información de aquellos trabjadores que salieron en 2016 por lo cual solo traeremos los datos referentes a este año 
+ret_16 = df_ret4[df_ret4['fecha'].dt.year == 2016]#Base general data con los datos del 2016
 
 # UNIR BASES DE DATOS ANTERIOMENTE DEPURADAS #
-"""se van a unir las bases partiendo del employeeID uniendo todas las bases del 2015 y por otro lado las bases del 2016 sin incluir la base que posee la información de retiro de los
-trabajadores teniendo asi 2 bases de datos nuevas para trabajar"""
+"""se van a unir las bases partiendo del employeeID y la fecha para evitar que se dupliquen los datos, en todas las bases se usaran los datos tanto del 2015 y del 2016
+menos en la base de retirenment"""
 
-df_1 = pd.merge(gd_15, ms_15 , how = 'left', on = 'EmployeeID')    
-data_15= pd.merge(df_1, empl_15 , how = 'left', on = 'EmployeeID')#base de datos información 2015
+#df_merged = pd.merge(df_g4, df_empl5, how= 'left', on=['EmployeeID', 'fecha'])
+#df_1.merge(df_2, on="id", how="left").merge(df_3, on="id", how="left") UNIR VARIAS TABLAS
 
-
-df_2 = pd.merge(gd_16, ms_16 , how = 'left', on = 'EmployeeID')    
-data_16= pd.merge(df_2, empl_16 , how = 'left', on = 'EmployeeID')#base de datos información 2016
-
+basefinal= df_g4.merge(df_empl5, how= 'left' , on=['EmployeeID', 'fecha']).merge(ret_16, how='left', on=['EmployeeID', 'fecha']).merge(df_man3, how='left', on=['EmployeeID', 'fecha'])
+basefinal
+basefinal.to_csv('data_hr_proyect/basefinal.csv', index= False)
