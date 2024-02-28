@@ -206,7 +206,16 @@ menos en la base de retirenment"""
 #df_1.merge(df_2, on="id", how="left").merge(df_3, on="id", how="left") UNIR VARIAS TABLAS
 
 
-basefinal= df_g4.merge(df_empl5, how= 'left' , on=['EmployeeID', 'fecha']).merge(df_man3, how='left', on=['EmployeeID', 'fecha']).merge(ret_16, how='left', on='EmployeeID')    
-basefinal
+base= df_g4.merge(df_empl5, how= 'left' , on=['EmployeeID', 'fecha']).merge(df_man3, how='left', on=['EmployeeID', 'fecha'])#base con la union de todas las tablas sin la tabla de retirement
+base.info()
+
+
+base15 = base[base['fecha'].dt.year == 2015]#separar la tabla base solo con los datos del 2015
+base16 = base[base['fecha'].dt.year == 2016]#separar la tabla base solo con los datos del 2016, esta base se usara para la predicción para el año 2017
+basefinal= pd.merge(base15, ret_16, how= 'left', on= 'EmployeeID')#Union de la tabla con los datos del 2015 con la base retirement que contiene la variable respuesta
+
+basefinal = basefinal.rename(columns= {'fecha_x':'fecha_info', 'fecha_y':'fecha_retiro' })#Renombrar las columnas de las fechas para mejor interpretabilidad
 
 basefinal.to_csv('data_hr_proyect/basefinal.csv', index= False)
+
+base16.to_csv('data_hr_proyect/baseprediccion.csv', index= False)
