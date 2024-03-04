@@ -13,6 +13,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.feature_selection import RFE
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+import funciones as fn
 
 #Dataframes
 basefinal = 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/basefinal.csv'
@@ -57,12 +58,7 @@ Education, EnvironmentSatisfaction, JobInvolvement, JobSatisfaction, WorkLifeBal
 variables = ['Education', 'EnvironmentSatisfaction', 'JobInvolvement', 'JobSatisfaction', 'WorkLifeBalance', 'JobLevel']
 df_fin = df_bfinal3.copy()
 
-#FUNCION 1#
-def transformacion(df, variables):
-    for i in variables:
-        df[i] = df[i].astype('object')
-    return df
-df_fin = transformacion(df_fin, variables)
+df_fin = fn.transformaciontransformacion(df_fin, variables)
 
 df_fin.info() # base con variable  objetivo estructurada
 
@@ -73,13 +69,7 @@ df_fin.isnull().sum()
 
 v_nulas = ['NumCompaniesWorked', 'TotalWorkingYears', 'EnvironmentSatisfaction', 'JobSatisfaction', 'WorkLifeBalance','mean_survery']
 
-# FUNCION NULOS#
-def nulos(df,variables_nulas):
-    for i in variables_nulas:
-        df = df.dropna(subset = [i]) 
-    return df
-
-df_no_null = nulos(df_fin, v_nulas)
+df_no_null = fn.nulos(df_fin, v_nulas)
 df_no_null.isnull().sum()
 
 df_no_null['Attrition'].value_counts()
@@ -109,8 +99,6 @@ b_wrpper_int = b_wrpper.select_dtypes(include = ["number"]) # filtrar solo varia
 b_wrpper_int = b_wrpper_int.drop('Attrition', axis = 1) #quitamos la variable objetivo
 y = b_wrpper_d['Attrition']#definimos variable objetivo
 
-
-
 # Normalizacion variables numericas
 
 b_wrpper_norm = b_wrpper_int.copy(deep = True)  # crear una copia del DataFrame
@@ -119,24 +107,11 @@ sv = scaler.fit_transform(b_wrpper_norm.iloc[:,:]) # normalizar los datos
 b_wrpper_norm.iloc[:,:] = sv # asignar los nuevos datos
 b_wrpper_norm.head()
 
-# FUNCION 2# 
-
-def recursive_feature_selection(X,y,model,k): #model=modelo que me va a servir de estimador para seleccionar las variables
-                                              # K = numero de variables a seleccionar
-  rfe = RFE(model, n_features_to_select=k, step=1) # step=1 significa que se eliminara una variable en cada iteracion
-  fit = rfe.fit(X, y) # ajustar el modelo
-  b_var = fit.support_ # seleccionar las variables
-  print("Num Features: %s" % (fit.n_features_)) # numero de variables seleccionadas
-  print("Selected Features: %s" % (fit.support_)) # variables seleccionadas
-  print("Feature Ranking: %s" % (fit.ranking_)) # ranking de las variables
-
-  return b_var # retornar las variables seleccionadas
-
 #Estimador para seleccion de variables (modelo de regresion logistica)#
 
 model = LogisticRegression() 
 
-b_var = recursive_feature_selection(b_wrpper_norm, y, model, 7) # seleccionar 10 variables
+b_var = fn.recursive_feature_selection(b_wrpper_norm, y, model, 7) # seleccionar 10 variables
 
 # Nuevo conjunto de datos a explorar
 b_varp = b_wrpper_int.iloc[:,b_var]
