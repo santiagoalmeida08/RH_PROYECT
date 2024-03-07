@@ -29,3 +29,10 @@ def recursive_feature_selection(X,y,model,k): #model=modelo que me va a servir d
   print("Feature Ranking: %s" % (fit.ranking_)) # ranking de las variables
 
   return b_var 
+
+#Funcion 4#
+
+def escala(df,variables):
+    for i in variables:
+        df[i] = df[i].replace({'1.0':'Muy insatisfecho', '2.0':'Insatisfecho', '3.0':'Satisfecho', '4.0':'Muy satisfecho'})
+    return df
