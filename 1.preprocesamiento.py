@@ -229,8 +229,3 @@ basefinal = basefinal.rename(columns= {'fecha_x':'fecha_info', 'fecha_y':'fecha_
 basefinal.to_csv('data_hr_proyect/basefinal.csv', index= False)
 
 base16.to_csv('data_hr_proyect/baseprediccion.csv', index= False)
-
-
-df_man3.info()
-df_empl5.info()
-df_g4.info()
