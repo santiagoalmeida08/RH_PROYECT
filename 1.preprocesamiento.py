@@ -201,9 +201,6 @@ df_man3['PerformanceRating'] = df_man3['PerformanceRating'].replace({3:'Bajo', 4
 
 df_man3.info() 
 
-
-#df_1.merge(df_2, on="id", how="left").merge(df_3, on="id", how="left") UNIR VARIAS TABLAS
-
 #Traer solo la información necesaria
 #RETIRENMENT: En esta base de datos solo se necesita la información de aquellos trabjadores que salieron en 2016 por lo cual solo traeremos los datos referentes a este año 
 ret_16 = df_ret4[df_ret4['fecha'].dt.year == 2016]#Base general data con los datos del 2016
@@ -211,9 +208,6 @@ ret_16 = df_ret4[df_ret4['fecha'].dt.year == 2016]#Base general data con los dat
 # UNIR BASES DE DATOS ANTERIOMENTE DEPURADAS #
 """se van a unir las bases partiendo del employeeID y la fecha para evitar que se dupliquen los datos, en todas las bases se usaran los datos tanto del 2015 y del 2016
 menos en la base de retirenment"""
-
-#df_merged = pd.merge(df_g4, df_empl5, how= 'left', on=['EmployeeID', 'fecha'])
-#df_1.merge(df_2, on="id", how="left").merge(df_3, on="id", how="left") UNIR VARIAS TABLAS
 
 
 base= df_g4.merge(df_empl5, how= 'left' , on=['EmployeeID', 'fecha']).merge(df_man3, how='left', on=['EmployeeID', 'fecha'])#base con la union de todas las tablas sin la tabla de retirement
