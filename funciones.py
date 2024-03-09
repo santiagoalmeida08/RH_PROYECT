@@ -9,12 +9,12 @@ def transformacion(df, variables):
 
 #FUNCION 2#
 # FUNCION NULOS#
-def nulos(df,variables_nulas):
-    for i in variables_nulas:
+def nulos(df):
+    for i in df.columns:
         if df[i].isnull().sum()/len(df) < 0.1:
             df = df.dropna(subset = [i]) 
         else:
-            df
+            df 
     return df
 
 # FUNCION 3# 
