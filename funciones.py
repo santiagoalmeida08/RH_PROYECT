@@ -14,7 +14,7 @@ def nulos(df,variables_nulas):
         if df[i].isnull().sum()/len(df) < 0.1:
             df = df.dropna(subset = [i]) 
         else:
-            df = df[i]
+            df
     return df
 
 # FUNCION 3# 
