@@ -61,10 +61,6 @@ df_no_null2 = df_no_null.copy()
 df_no_null2 = df_no_null2.drop(['fecha_retiro'], axis=1) # se elimina la variable fecha_retiro ya que solo fue util para union de bases
 df_no_null2.info()
 
-#exportar base para realizar modelo de seleccion#
-base_seleccion = df_no_null2.copy()
-base_seleccion.to_csv('data_hr_proyect/base_seleccion.csv', index= False)
- 
 
 # Exploración Variables Numercias #
 
@@ -278,11 +274,22 @@ for column in df_expl_cat.columns:
     15.Para la variable performance rating se observa que no hay variacion pero de igual forma las personas que mas renuncian son aquellas que tienen un rendimiento bajo
     aunque esto tambien puede deberse a que estas representan la mayor parte de los datos
     16.Tal como se esperaba para la variable retirement reason solo se tienen 3 categorias para las personas que si se retiraron organizadas de menor a mayor se encuentra el estres, el salario y otras razones"""
+    
+"""En conclusion tras el analisis exploratorio se definio que NO se tomaran en cuenta las siguientes variables, debido a su correlacion y poca representatividad en las categorias
+    -Businesstravel
+    -retirement_reason
+    -TrainingTimesLastYear
+    -PerformanceRating
+    -TotalWorkingYears"""
+    
+# Vamos a cargar a la carpeta data una base con las variables seleccionadas para utilizarla en la seleccion de modelos #
 
-"""En conclusion las variables categoricas que de alguna forma podrian tener significancia en el modelo son:
+df5 = df_no_null2.drop(['BusinessTravel','retirement_reason','TrainingTimesLastYear','PerformanceRating','TotalWorkingYears','fecha_info'], axis=1)
+df5.columns
 
-    WorkLifeBalance, JobSatisfaction,EnviromentSatisfaction,YearsSionceLastPromotion,MaritialStatus"""
+base_seleccion = df5.copy()
 
+base_seleccion.to_csv('data_hr_proyect/base_seleccion.csv', index= False)
 
 
 
