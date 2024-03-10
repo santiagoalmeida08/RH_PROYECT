@@ -55,7 +55,7 @@ df_no_null.isnull().sum()
 # Analisis de variables con mas del 10% de nulos #
 
 df_no_null['retirement_reason'].value_counts() # empleados que abandonaron la empresa
-df_no_null['retirement_reason'] = df_no_null['retirement_reason'].fillna('NA') # se imputaran valores nulos con 'NA' lo cual implica que el empleado sigue trabajando en la empresa
+df_no_null['retirement_reason'] = df_no_null['retirement_reason'].fillna('no aplica') # se imputaran valores nulos con 'NA' lo cual implica que el empleado sigue trabajando en la empresa
 
 df_no_null2 = df_no_null.copy()
 df_no_null2 = df_no_null2.drop(['fecha_retiro'], axis=1) # se elimina la variable fecha_retiro ya que solo fue util para union de bases
