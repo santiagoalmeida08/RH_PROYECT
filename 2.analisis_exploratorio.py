@@ -240,7 +240,7 @@ ser representativa dentro de modelo"""
 """A pesar de que la variable performance rating tiene mas del 80% de los datos en la categoria de un rendimiento bajo no se va descartar aun esta variable porque podria ser importante 
 para el desarrollo del modelo"""
 
-"""Para retirement reason se puede observar que la mayoria  datos se encuentran en la categoria NA ya que son aquellas personas que no han renunciado por lo cual no se tiene una razon de despido"""
+"""Para retirement reason se puede observar que la mayoria  datos se encuentran en la categoria No aplica ya que son aquellas personas que no han renunciado por lo cual no se tiene una razon de despido"""
 
 
 #Analisis Bivariado de variables categoricas #

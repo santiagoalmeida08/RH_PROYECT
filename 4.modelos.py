@@ -10,6 +10,11 @@ from sklearn.metrics import accuracy_score,confusion_matrix, ConfusionMatrixDisp
 import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import metrics
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+#RANDOM FOREST
+from sklearn.ensemble import RandomForestClassifier 
 
 
 # Cargar el DataFrame
@@ -111,3 +116,42 @@ print(metrics.classification_report(y_test, y_true, digits = 3))
 cm = confusion_matrix(y_test, y_true)
 cmd = ConfusionMatrixDisplay(cm, display_labels=model_arb.classes_)
 cmd.plot()
+
+#MODELO DE REGRESIÓN LOGISTICA
+
+model_log = LogisticRegression() # definir el modelo de regresión losgistica
+model_log.fit(X_train,y_train) # entrenar el modelo
+y_pred_train = model_log.predict(X_train) # guardar la predicción para train
+y_pred_test = model_log.predict(X_test) # guardar la predicción para test
+
+#Metricas de desempeño modelo de regresión logistica
+# Matriz de confusión:
+cm = confusion_matrix(y_test, y_pred_test, labels=model_log.classes_) # guardar las clases para la matriz de confusión
+disp = ConfusionMatrixDisplay(confusion_matrix=cm,display_labels=model_log.classes_)
+disp.plot();
+print(cm)
+
+
+TP=cm[0,0]
+FP=cm[1,0]
+FN=cm[0,1]
+TN=cm[1,1]
+
+print(f"Accuracy test: {accuracy_score(y_test, y_pred_test)}")
+print(f'Precicion: {TP/(TP+FP)}')
+print(f'Recall (Sensibilidad)): {TP/(TP+FN)}')
+print(f'F1-score:', f1_score(y_test, y_pred_test, average='binary'))
+print(f'Especificidad: {TN/(FP+TN)}')
+
+
+#MODELO RANDOM FOREST
+model = RandomForestClassifier(n_estimators = 100,#o regresation
+                               criterion = 'gini',#error
+                               max_depth = 5,#cuantos arboles
+                               max_leaf_nodes = 10,#profundidad
+                               max_features = None,#nodos finales
+                               oob_score = False,
+                               n_jobs = -1,
+                               random_state = 123)
+model.fit(X_train, y_train)
+print(metrics.classification_report(y_test, model.predict(X_test)))
