@@ -1,5 +1,17 @@
 
 # Seleccion de variables para el modelo #
+import pandas as pd
+import numpy as np 
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.feature_selection import RFE
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+import funciones as fn
+
+# Cargar el DataFrame
+
+df = pd.read_csv('https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/base_seleccion.csv')
+df.isnull().sum()
 
 # Create a Random Forest classifier
 rf = RandomForestClassifier()

@@ -279,6 +279,6 @@ for column in df_expl_cat.columns:
 
 
 
-base_seleccion = df_no_null2.copy()
+base_seleccion = df_no_null2
 
 base_seleccion.to_csv('data_hr_proyect/base_seleccion.csv', index= False)
