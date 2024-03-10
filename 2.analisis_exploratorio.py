@@ -280,7 +280,8 @@ for column in df_expl_cat.columns:
     16.Tal como se esperaba para la variable retirement reason solo se tienen 3 categorias para las personas que si se retiraron organizadas de menor a mayor se encuentra el estres, el salario y otras razones"""
 
 """En conclusion las variables categoricas que de alguna forma podrian tener significancia en el modelo son:
-    WorkLifeBalance, JobSatisfaction, JobSatisfaction,EnviromentSatisfaction,YearsSionceLastPromotion,MaritialStatus"""
+
+    WorkLifeBalance, JobSatisfaction,EnviromentSatisfaction,YearsSionceLastPromotion,MaritialStatus"""
 
 
 
