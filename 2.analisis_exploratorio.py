@@ -59,7 +59,12 @@ df_no_null['retirement_reason'] = df_no_null['retirement_reason'].fillna('NA') #
 
 df_no_null2 = df_no_null.copy()
 df_no_null2 = df_no_null2.drop(['fecha_retiro'], axis=1) # se elimina la variable fecha_retiro ya que solo fue util para union de bases
-df_no_null2.info() 
+df_no_null2.info()
+
+#exportar base para realizar modelo de seleccion#
+base_seleccion = df_no_null2.copy()
+base_seleccion.to_csv('data_hr_proyect/base_seleccion.csv', index= False)
+ 
 
 # Exploración Variables Numercias #
 
@@ -279,6 +284,4 @@ for column in df_expl_cat.columns:
 
 
 
-base_seleccion = df_no_null2
 
-base_seleccion.to_csv('data_hr_proyect/base_seleccion.csv', index= False)

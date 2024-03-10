@@ -11,7 +11,8 @@ import funciones as fn
 # Cargar el DataFrame
 
 df = pd.read_csv('https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/base_seleccion.csv')
-df.isnull().sum()
+
+df = df.drop('retirement_reason', axis = 1)
 
 # Create a Random Forest classifier
 rf = RandomForestClassifier()
