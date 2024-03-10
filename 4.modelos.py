@@ -194,7 +194,7 @@ rf_final.fit(x_train_res,y_train_res)
 
 from sklearn.tree import plot_tree
 plt.figure(figsize=(20,10))
-plot_tree(rf_final, filled=True, feature_names = x.columns, class_names = ['No','Yes'])
+#plot_tree(rf_final, filled=True, feature_names = x.columns, class_names = ['No','Yes'])
 plt.show()
 
 y_pred = model_arb.predict(X_test)
