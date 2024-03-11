@@ -28,15 +28,28 @@ data_seleccion= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/
 
 df = pd.read_csv(data_seleccion,sep=',') ## BASE ORIGINAL ##
 
+df.dtypes
+
 df.isnull().sum()
 df = df.drop('EmployeeID', axis = 1)
 
 df1 = df.copy()
+df1.info()
+
+df1['JobLevel'] = df1['JobLevel'].astype('object')  
+
+df1['NumCompaniesWorked'] = df1['NumCompaniesWorked'].astype('int64')
+df1['PercentSalaryHike'] = df1['PercentSalaryHike'].astype('int64')
+df1['WorkLifeBalance'] = df1['WorkLifeBalance'].astype('int64')
+df1['JobSatifaction'] = df1['JobSatisfaction'].astype('int64')
+df1['EnviromentSatisfaction'] = df1['EnvironmentSatisfaction'].astype('int64')
 
 list_cat = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object']
-list_oe = ['StockOptionLevel','EnvironmentSatisfaction','JobSatisfaction','WorkLifeBalance','PercentSalaryHike','JobLevel','JobInvolvement']
+list_oe = ['JobLevel']
 list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) == 2]
-list_dd = ['Department','Education','EducationField','JobRole','MaritalStatus','NumCompaniesWorked','YearsSinceLastPromotion']
+list_dd = ['Department','Education','EducationField','JobRole','MaritalStatus']
+
+df1.dtypes
 
 # DUMMIES #
 
@@ -62,30 +75,7 @@ df_encoded = encode_data(df1, list_oe, list_le,list_dd)
 
 df3 = df_encoded.copy()
 
-"""
-#LabelEncoder
-
-df2 = df1.copy()   
-le = LabelEncoder() # 0 = No y 1 = Yes
-
-for i in df2.columns:
-    if df2[i].dtype == 'object' and len(df2[i].unique()) == 2:  
-        df2[i] = le.fit_transform(df2[i])
-    else:
-        df2
-
-
-# Ordinal Encoding
-ord =  ['StockOptionLevel','EnvironmentSatisfaction','JobSatisfaction','WorkLifeBalance','PercentSalaryHike','JobLevel','JobInvolvement']
-oe = OrdinalEncoder()
-
-for i in ord : 
-    df2[i]=oe.fit_transform(df2[[i]])
-
-
-#Get Dummies
-df3 = pd.get_dummies(df2)
-df3.columns"""
+df3.dtypes
 
 #Normalizacion
 
@@ -96,7 +86,7 @@ for col in df3.columns:
 
 scaler = MinMaxScaler()
 for col in v_num:
-    df3[[col]] = scaler.fit_transform(df[[col]])
+    df3[[col]] = scaler.fit_transform(df3[[col]])
 
 df3.head()
 
@@ -105,14 +95,9 @@ y = df3['Attrition']
 
 # Selecccion de modelos #
 
-# Gradient Boosting
-# Arboles de desicion 
-# Regresión Logistica
-# Random Forest
-
 model_gb = GradientBoostingClassifier()
-model_arb = DecisionTreeClassifier(class_weight='balanced', max_depth=4, random_state=42)
-model_log = LogisticRegression()
+model_arb = DecisionTreeClassifier(max_depth=4, random_state=42) 
+model_log = LogisticRegression( max_iter=1000, random_state=42)
 model_rand = RandomForestClassifier(n_estimators = 100,#o regresation
                                criterion = 'gini',#error
                                max_depth = 5,#cuantos arboles
@@ -129,7 +114,7 @@ def sel_variables(modelos,X,y,threshold):
     
     var_names_ac=np.array([])
     for modelo in modelos:
-        #modelo=modelos[i]
+   
         modelo.fit(X,y)
         sel = SelectFromModel(modelo, prefit=True,threshold=threshold)
         var_names= modelo.feature_names_in_[sel.get_support()]
@@ -141,6 +126,7 @@ def sel_variables(modelos,X,y,threshold):
 
 var_names= sel_variables(modelos,X_esc,y,threshold="2.8*mean") 
 var_names.shape
+
 # Al utiizar numeros menores se aceptaban mas variables sin embargo el desempeño seguia siendo el mosmo por lo cual
 # Se utilizo un treshold de 2.8 en el cual se traba con 8 variables las cuales aportan significia a los modelos
 
@@ -169,8 +155,8 @@ def medir_modelos(modelos,scoring,X,y,cv):
     metric_modelos.columns=["gard_boost","decision_tree","random_forest","reg_logistic"]
     return metric_modelos
 
-f1sco_df = medir_modelos(modelos,"f1",X_esc,y,10)  #se definen 10 iteraciones para tener mejor visión del desempeño en el boxplot
-f1dco_var_sel = medir_modelos(modelos,"f1",df4,y,10)
+f1sco_df = medir_modelos(modelos,"accuracy",X_esc,y,10)  #se definen 10 iteraciones para tener mejor visión del desempeño en el boxplot
+f1dco_var_sel = medir_modelos(modelos,"accuracy",df4,y,10)
 
 
 f1s=pd.concat([f1sco_df,f1dco_var_sel],axis=1) 
@@ -187,6 +173,16 @@ f1s.mean()
 Ademas de esto una pequeña diferencia de desempeño (2%) entre el modelo con todas las variables y las variables seleccionadas; se va a trabajar con 
 el modelo de variables seleccionadas, sacrificando ese 2% de desempeño pero mejorando la interpretabilidad del modelo y ahorrando recursos computacionales."""
 
+#Matriz confusion para rl_Sel
+model_log = LogisticRegression( max_iter=1000, random_state=42)
+model_log.fit(df4,y)
+
+y_pred = model_log.predict(df4)
+cm = confusion_matrix(y, y_pred)
+cmd = ConfusionMatrixDisplay(cm, display_labels=model_log.classes_)
+cmd.plot()
+    
+
 
 # Ajuste de hiperparametros del modelo ganador DecisionTreeClasifier #
 from scipy.stats import uniform, poisson
@@ -195,9 +191,9 @@ from sklearn.model_selection import RandomizedSearchCV
 # setup parameter space
 
 parameters = {'criterion':['gini','entropy'],
-              'max_depth': [3,5,10,15], # mex_depth es la profundidad del arbol
-              'min_samples_split': [2,4,5,10], # min_samples_split es el numero minimo de muestras que se requieren para dividir un nodo
-              'max_leaf_nodes': [5,10,15,20]} # max_leaf_nodes es el numero maximo de nodos finales
+              'max_depth': [30,5,10,15], # mex_depth es la profundidad del arbol
+              'min_samples_split': [20,40,50,10], # min_samples_split es el numero minimo de muestras que se requieren para dividir un nodo
+              'max_leaf_nodes': [25,10,15,20]} # max_leaf_nodes es el numero maximo de nodos finales
 
 # create an instance of the randomized search object
 r1 = RandomizedSearchCV(DecisionTreeClassifier(), parameters, cv=5, n_iter=100, random_state=42, n_jobs=-1, scoring='f1') 
