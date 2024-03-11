@@ -24,7 +24,7 @@ from sklearn.model_selection import cross_val_predict, cross_val_score, cross_va
 # Cargar el DataFrame
 
 
-data_seleccion= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/baseprediccion2.csv'
+data_seleccion= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/base_seleccion2.csv'
 
 df = pd.read_csv(data_seleccion,sep=',') ## BASE ORIGINAL ##
 
@@ -32,9 +32,10 @@ df.isnull().sum()
 df = df.drop('EmployeeID', axis = 1)
 
 df1 = df.copy()
-df1.info()
-df1=df1.dropna()
+df1.columns
 df1.isnull().sum()
+
+
 list_cat = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object']
 #list_oe = ['StockOptionLevel','EnvironmentSatisfaction','JobSatisfaction','WorkLifeBalance','PercentSalaryHike','JobLevel','JobInvolvement']
 list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) == 2]
@@ -92,6 +93,12 @@ df3.columns"""
 
 #Normalizacion
 
+for i in df3.columns:
+    if df3[i].dtypes == "float64":
+        df3[i] = df3[i].astype("int64")
+
+df3.dtypes
+
 v_num = []
 for col in df3.columns:
     if df3[col].dtypes == "int64":
@@ -99,9 +106,9 @@ for col in df3.columns:
 
 scaler = MinMaxScaler()
 for col in v_num:
-    df3[[col]] = scaler.fit_transform(df[[col]])
+    df3[[col]] = scaler.fit_transform(df3[[col]])
 
-df3.head()
+df3
 
 X_esc = df3.drop('Attrition', axis = 1)
 y = df3['Attrition']
