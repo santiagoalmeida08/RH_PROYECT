@@ -23,7 +23,7 @@ df_empl2.info() # podemos observar que las unicas variables sin nulos son emplye
 
 # En caso de que se encuentren datos nulos con un bajo porcentaje de representatividad se procedera a eliminarlos#
 
-df_empl2 = fn.nulos(df_empl2, ['EnvironmentSatisfaction', 'JobSatisfaction', 'WorkLifeBalance'])
+df_empl2 = fn.nulos(df_empl2)
 df_empl2.isnull().sum()
 
 # TRANSFORMACION DE VARIABLES #
@@ -41,18 +41,8 @@ df_empl4['EnvironmentSatisfaction'].value_counts()#se puede observar que las var
 df_empl4['JobSatisfaction'].value_counts()
 df_empl4['WorkLifeBalance'].value_counts()
 
-"""Podemos observar que todas las variables tienen la misma escala de 1 a 4,
-por lo cual podemos definir una recategorizacion asi : """
-
-dict = { 1.0:'Muy insatisfecho', 2.0:'Insatisfecho', 3.0:'Satisfecho', 4.0:'Muy satisfecho'}
-variables = ['EnvironmentSatisfaction', 'JobSatisfaction', 'WorkLifeBalance']
 df_empl5 = df_empl4.copy()
-
-for i in variables:
-    df_empl5[i] = df_empl5[i].replace(dict) #transformacion de las variables a categoricas
-
-df_empl5= df_empl5.rename(columns= {'DateSurvey':'fecha'})# se quiere que en todas las bases la variable fecha tenga el mismo nombre
-
+df_empl5 = df_empl5.rename(columns= {'DateSurvey':'fecha'})# se quiere que en todas las bases la variable fecha tenga el mismo nombre
 df_empl5.info() # BASE FINAL EMPL #
 
 
@@ -121,12 +111,12 @@ df_g2.isnull().sum()
 de datos que contiene la base de datos y ademas es importante conocer la información de todos los empleados por lo cual por ahora no se van a eliminar las filas 
 que contienen estos datos nulos """
 
-df_g2 = fn.nulos(df_g2, ['NumCompaniesWorked', 'TotalWorkingYears']) # eliminamos nulos 
+df_g2 = fn.nulos(df_g2) # eliminamos nulos 
 
 df_g2[df_g2.duplicated()]#filtra duplicados 
 #no se encuentran datos duplicados
 df_g3=df_g2.copy()
-
+"""
 #ANALIZAR VARIABLES Y CATEGORIAS 
 df_g3['EmployeeCount'].value_counts() #SOLO TIENE UNA CATEGORIA POR LO CUAL SE TOMA LA DECISIÓN DE ELIMINAR ESTA VARIABLE
 df_g3['Over18'].value_counts() #solo tiene una categoria por lo cual se toma la decision de eliminar esta variable
@@ -164,7 +154,9 @@ df_g4= df_g4.rename(columns= {'InfoDate':'fecha'})# se quiere que en todas las b
 df_g4['NumCompaniesWorked'].value_counts()
 df_g4['TrainingTimesLastYear'].value_counts()
 df_g4['Education'].value_counts()
-
+"""
+df_g4 = df_g3.copy()
+df_g4= df_g4.rename(columns= {'InfoDate':'fecha'})
 #Como la fecha se encuentra en formato object vamos a convertirlo en formato fecha
 df_g4['fecha']=pd.to_datetime(df_g4['fecha'])
 df_g4.info()# base final
@@ -197,8 +189,8 @@ df_man3 = df_man3.rename(columns= {'SurveyDate':'fecha'})# se quiere que en toda
 df_man3['JobInvolvement'].value_counts()
 df_man3['PerformanceRating'].value_counts()
 
-df_man3['JobInvolvement'] = df_man3['JobInvolvement'].replace({1:'Bajo', 2:'Bajo', 3:'Medio', 4:'Alto'})
-df_man3['PerformanceRating'] = df_man3['PerformanceRating'].replace({3:'Bajo', 4:'Alto'})
+#df_man3['JobInvolvement'] = df_man3['JobInvolvement'].replace({1:'Bajo', 2:'Bajo', 3:'Medio', 4:'Alto'})
+#df_man3['PerformanceRating'] = df_man3['PerformanceRating'].replace({3:'Bajo', 4:'Alto'})
 
 df_man3.info() 
 
@@ -221,6 +213,335 @@ basefinal= pd.merge(base15, ret_16, how= 'left', on= 'EmployeeID')#Union de la t
 
 basefinal = basefinal.rename(columns= {'fecha_x':'fecha_info', 'fecha_y':'fecha_retiro' })#Renombrar las columnas de las fechas para mejor interpretabilidad
 
-basefinal.to_csv('data_hr_proyect/basefinal2.csv', index= False)
+#basefinal.to_csv('data_hr_proyect/basefinal2.csv', index= False)
 
-base16.to_csv('data_hr_proyect/baseprediccion2.csv', index= False)
+#base16.to_csv('data_hr_proyect/baseprediccion2.csv', index= False)
+
+
+############### ANALISIS EXPLORATORIO DE DATOS ####################
+
+# Quitamos las variables que no van a servir 
+base = basefinal.drop(['fecha_info', 'fecha_retiro'], axis=1)
+
+base.dtypes
+
+# Variable Objetivo #
+df_bfinal2 = base.copy()
+    
+df_bfinal2['Attrition'] = df_bfinal2['retirement_reason'].replace({'Salary':'yes', 'Others':'yes', 'Stress':'yes', 'Fired':'no'}).fillna('no')  #reemplazamos valores segun la categoria retirement_reason
+df_bfinal2['Attrition'].value_counts()
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+sns.countplot(x='Attrition', data=df_bfinal2, palette='hls')
+plt.show()
+
+
+df_bfinal2['retirement_reason'] = df_bfinal2['retirement_reason'].fillna('no aplica') 
+df_bfinal2 = fn.nulos(df_bfinal2)
+df_bfinal2.isnull().sum()
+
+#Variables numericas #
+df_bfinal2.hist(bins=20, figsize=(20,15))
+
+# Eliminacion variables #
+df_bfinal3 = df_bfinal2.drop(['EmployeeCount','StandardHours','PerformanceRating'], axis=1) 
+
+#Categoroizacion de variables #
+df_bfinal3['Education'] = df_bfinal3['Education'].replace({'Escuela secundaria':1, 'Licenciatura':2, 'Maestria':3, 'Doctorado':4, 'Posdoctorado':5})
+df_bfinal3['TrainingTimesLastYear'] = df_bfinal3['TrainingTimesLastYear'].replace({0:'Ningun entrenamiento', 
+                                                                   1:'Al menos 3 semanas', 2:'Al menos 3 semanas', 3:'Al menos 3 semanas', 
+                                                                   4:'De 4 a 5 semanas', 5:'De 4 a 5 semanas', 6:'De 4 a 5 semanas'})
+df_bfinal3['TrainingTimesLastYear'].value_counts()
+#Correlacion 
+correlation = df_bfinal3.corr()
+plt.figure(figsize=(10,10))
+sns.heatmap(correlation, annot=True, cmap='coolwarm')
+
+# analisis atipicos #
+for i in df_bfinal3.columns:
+    if df_bfinal3[i].dtype == 'int64':
+        sns.boxplot(df_bfinal3[i])
+        plt.show()
+
+#Monthly income
+#years at company
+#years since last promotion
+#years with current manager
+
+df4 = df_bfinal3.copy()
+
+# Tratamiento de atipicos #
+for column in df4.columns:
+    if df4[column].dtype != 'object':
+        Q1 = df4[column].quantile(0.25)
+        Q3 = df4[column].quantile(0.75)
+        IQR = Q3 - Q1
+        lower_bound = Q1 - 1.5 * IQR
+        upper_bound = Q3 + 1.5 * IQR
+        outliers = df4[(df4[column] < lower_bound) | (df4[column] > upper_bound)]
+        print(f"Variable: {column}, Number of outliers: {len(outliers)}")
+
+def impute_outliers(df):
+    # Imputar datos atipicos MonthlyIncome
+    mean = df['MonthlyIncome'].mean()
+    std = np.std(df['MonthlyIncome'])
+    df['MonthlyIncome'] = np.where(df['MonthlyIncome'] > 3 * std, mean, df['MonthlyIncome'])
+
+    #Impotar datos atipicos NumCompaniesWorked
+    std = np.std(df['NumCompaniesWorked'])
+    mode_num_companies = df['NumCompaniesWorked'].mode().values[0]
+    df['NumCompaniesWorked'] = np.where(df['NumCompaniesWorked'] > 3* std, mode_num_companies, df['NumCompaniesWorked']) 
+
+    # Imputing outliers in 'StockOptionLevel' with mode
+    std = np.std(df['StockOptionLevel'])
+    mode_stock_option = df['StockOptionLevel'].mode().values[0]
+    df['StockOptionLevel'] = np.where(df['StockOptionLevel'] > 3*std, mode_stock_option, df['StockOptionLevel'])
+
+    #Imputar TotalWorkingYears
+    mean = df['TotalWorkingYears'].mean()
+    std = np.std(df['TotalWorkingYears'])
+    df['TotalWorkingYears'] = np.where(df['TotalWorkingYears'] > 3 * std, mean, df['TotalWorkingYears'])
+
+    #Imputar YearsAtCompany
+    mean = df['YearsAtCompany'].mean()
+    std = np.std(df['YearsAtCompany'])
+    df['YearsAtCompany'] = np.where(df['YearsAtCompany'] > 3 * std, mean, df['YearsAtCompany'])
+
+    #Imputar YearsSinceLastPromotion
+    mean = df['YearsSinceLastPromotion'].mean()
+    std = np.std(df['YearsSinceLastPromotion'])
+    df['YearsSinceLastPromotion'] = np.where(df['YearsSinceLastPromotion'] > 3 * std, mean, df['YearsSinceLastPromotion'])
+
+    #Imputar YearsWithCurrManager
+    mean = df['YearsWithCurrManager'].mean()
+    std = np.std(df['YearsWithCurrManager'])
+    df['YearsWithCurrManager'] = np.where(df['YearsWithCurrManager'] > 3 * std, mean, df['YearsWithCurrManager'])
+    
+    return df
+
+df6 = impute_outliers(df4)
+
+sns.boxplot(x='Attrition', y='MonthlyIncome', data=df6)
+
+df5 = df4.copy()
+df5 = df5.select_dtypes(include='object')
+# Analisis Categoricos #
+
+import plotly.express as px 
+for column in df5.columns:
+    if column != 'Attrition': # se excluye la variable objetivo ya que esta se analizara por separado
+        base = df5.groupby([column])[['Attrition']].count().reset_index().rename(columns ={'Attrition':'count'})
+        fig = px.pie(base, names=column, values='count', title= column)
+        xaxis_title = column
+        yaxis_title = 'Cantidad'
+        template = 'simple_white'
+        fig.show()
+
+# se eliminaran las variables con categorias poco representativas que son :
+df6 = df4.copy() 
+df6 = df6.drop(['EmployeeID','JobRole','Over18','retirement_reason'], axis=1)
+
+
+## MODELOS ###
+
+
+import pandas as pd 
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score,confusion_matrix, ConfusionMatrixDisplay, f1_score
+import matplotlib.pyplot as plt
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import metrics
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+from sklearn.ensemble import RandomForestClassifier 
+from imblearn.over_sampling import RandomOverSampler
+from collections import Counter
+from sklearn.utils import resample
+from sklearn.preprocessing import OrdinalEncoder
+from sklearn.feature_selection import SelectFromModel
+from sklearn.model_selection import cross_val_predict, cross_val_score, cross_validate
+
+# BASE DF6 #
+
+df1 = df6.copy()
+
+df1.EnvironmentSatisfaction = df1.EnvironmentSatisfaction.astype(int)
+df1.JobSatisfaction  = df1.JobSatisfaction.astype(int)
+df1.WorkLifeBalance = df1.WorkLifeBalance.astype(int)
+df1.NumCompaniesWorked = df1.NumCompaniesWorked.astype(int)
+df1.TotalWorkingYears = df1.TotalWorkingYears.astype(int)
+
+
+
+list_cat = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object']
+#list_oe = ['Education']
+list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) == 2]
+#list_dd = ['Department','Education','EducationField','JobRole','MaritalStatus','NumCompaniesWorked','YearsSinceLastPromotion']
+list_dd = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) > 2]
+
+# DUMMIES #
+df_encoded=pd.get_dummies(df1,columns=list_dd)
+def encode_data(df, list_le, list_dd):
+    df_encoded = df1.copy()
+    
+    #Get dummies
+    df_encoded=pd.get_dummies(df_encoded,columns=list_dd)
+    
+    #Ordinal Encoding
+    #oe = OrdinalEncoder()
+    #for col in list_oe:
+     #   df_encoded[col] = oe.fit_transform(df_encoded[[col]])
+    
+    # Label Encoding
+    le = LabelEncoder()
+    for col in list_le:
+        df_encoded[col] = le.fit_transform(df_encoded[col])
+    
+    return df_encoded
+
+df_encoded = encode_data(df1, list_le,list_dd)
+
+df3 = df_encoded.copy()
+df3
+
+
+for i in df3.columns:
+    if df3[i].dtypes == "float64":
+        df3[i] = df3[i].astype("int64")
+
+df3.dtypes
+
+v_num = []
+for col in df3.columns:
+    if df3[col].dtypes == "int64":
+        v_num.append(col)
+
+scaler = MinMaxScaler()
+for col in v_num:
+    df3[[col]] = scaler.fit_transform(df3[[col]])
+
+df3
+
+X_esc = df3.drop('Attrition', axis = 1)
+y = df3['Attrition']
+
+
+# Selecccion de modelos #
+
+# Gradient Boosting
+# Arboles de desicion 
+# Regresión Logistica
+# Random Forest
+
+model_gb = GradientBoostingClassifier()
+model_arb = DecisionTreeClassifier(class_weight='balanced', max_depth=4, random_state=42)
+model_log = LogisticRegression()
+model_rand = RandomForestClassifier(n_estimators = 100,#o regresation
+                               criterion = 'gini',#error
+                               max_depth = 5,#cuantos arboles
+                               max_leaf_nodes = 10,#profundidad
+                               max_features = None,#nodos finales
+                               oob_score = False,
+                               n_jobs = -1,
+                               random_state = 123)
+
+modelos  = list([model_gb,model_arb,model_log,model_rand])
+
+# Seleccion de variables con base a los modelos seleccionados
+def sel_variables(modelos,X,y,threshold):
+    
+    var_names_ac=np.array([])
+    for modelo in modelos:
+        #modelo=modelos[i]
+        modelo.fit(X,y)
+        sel = SelectFromModel(modelo, prefit=True,threshold=threshold)
+        var_names= modelo.feature_names_in_[sel.get_support()]
+        var_names_ac=np.append(var_names_ac, var_names)
+        var_names_ac=np.unique(var_names_ac)
+    
+    return var_names_ac
+
+
+var_names= sel_variables(modelos,X_esc,y,threshold="2.8*mean") 
+var_names.shape
+# Al utiizar numeros menores se aceptaban mas variables sin embargo el desempeño seguia siendo el mosmo por lo cual
+# Se utilizo un treshold de 2.8 en el cual se traba con 8 variables las cuales aportan significia a los modelos
+
+
+df_var_sel = df3[var_names]
+df_var_sel.info()
+
+
+# Division data en train y test kfold-croos-validation #
+
+df4 = df_var_sel.copy()
+
+from sklearn.model_selection import cross_val_score
+#from sklearn.pipeline import make_pipeline
+
+
+
+def medir_modelos(modelos,scoring,X,y,cv):
+    os = RandomOverSampler()
+    metric_modelos=pd.DataFrame()
+    for modelo in modelos:
+        #pipeline = make_pipeline(os, modelo)
+        scores=cross_val_score(modelo,X,y, scoring=scoring, cv=cv )
+        pdscores=pd.DataFrame(scores)
+        metric_modelos=pd.concat([metric_modelos,pdscores],axis=1)
+    
+    metric_modelos.columns=["gard_boost","decision_tree","random_forest","reg_logistic"]
+    return metric_modelos
+
+f1sco_df = medir_modelos(modelos,"f1",X_esc,y,10)  #se definen 10 iteraciones para tener mejor visión del desempeño en el boxplot
+f1dco_var_sel = medir_modelos(modelos,"f1",df4,y,10)
+
+
+f1s=pd.concat([f1sco_df,f1dco_var_sel],axis=1) 
+f1s.columns=['rlog', 'dtree', 'rforest', 'gboosting',
+       'rl_Sel', 'dt_sel', 'rf_sel', 'gb_Sel']
+
+
+f1sco_df.plot(kind='box') #### gráfico para modelos todas las varibles
+f1dco_var_sel.plot(kind='box') ### gráfico para modelo variables seleccionadas
+f1s.plot(kind='box') ### gráfico para modelos sel y todas las variables
+
+
+parameters = {'criterion':['gini','entropy'],
+              'max_depth': [3,5,10,15], # mex_depth es la profundidad del arbol
+              'min_samples_split': [2,4,5,10], # min_samples_split es el numero minimo de muestras que se requieren para dividir un nodo
+              'max_leaf_nodes': [5,10,15,20]} # max_leaf_nodes es el numero maximo de nodos finales
+
+# create an instance of the randomized search object
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_validate
+
+r1 = RandomizedSearchCV(DecisionTreeClassifier(), parameters, cv=5, n_iter=100, random_state=42, n_jobs=-1, scoring='f1') 
+
+r1.fit(df4,y)
+
+resultados = r1.cv_results_
+r1.best_params_
+pd_resultados=pd.DataFrame(resultados)
+pd_resultados[["params","mean_test_score"]].sort_values(by="mean_test_score", ascending=False)
+
+rf_final=r1.best_estimator_ ### Guardar el modelo con hyperparameter tunning
+
+
+eval=cross_validate(rf_final,df4,y,cv=5,scoring='f1',return_train_score=True) 
+
+train_rf=pd.DataFrame(eval['train_score'])
+test_rf=pd.DataFrame(eval['test_score'])
+train_test_rf=pd.concat([train_rf, test_rf],axis=1)
+train_test_rf.columns=['train_score','test_score']
+train_test_rf
+
+train_test_rf["test_score"].mean()

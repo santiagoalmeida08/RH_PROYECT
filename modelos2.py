@@ -210,6 +210,7 @@ parameters = {'criterion':['gini','entropy'],
               'max_leaf_nodes': [5,10,15,20]} # max_leaf_nodes es el numero maximo de nodos finales
 
 # create an instance of the randomized search object
+
 r1 = RandomizedSearchCV(DecisionTreeClassifier(), parameters, cv=5, n_iter=100, random_state=42, n_jobs=-1, scoring='f1') 
 
 r1.fit(df4,y)
@@ -299,3 +300,5 @@ cmd = ConfusionMatrixDisplay(cm, display_labels=m_sink.classes_)
 cmd.plot()
 
 print(metrics.classification_report(y_test, m_sink.predict(X_test)))
+
+
