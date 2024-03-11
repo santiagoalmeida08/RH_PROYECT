@@ -24,7 +24,7 @@ from sklearn.model_selection import cross_val_predict, cross_val_score, cross_va
 # Cargar el DataFrame
 
 
-data_seleccion= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/base_seleccion.csv'
+data_seleccion= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/baseprediccion2.csv'
 
 df = pd.read_csv(data_seleccion,sep=',') ## BASE ORIGINAL ##
 
@@ -33,23 +33,26 @@ df = df.drop('EmployeeID', axis = 1)
 
 df1 = df.copy()
 df1.info()
+df1=df1.dropna()
+df1.isnull().sum()
 list_cat = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object']
-list_oe = ['StockOptionLevel','EnvironmentSatisfaction','JobSatisfaction','WorkLifeBalance','PercentSalaryHike','JobLevel','JobInvolvement']
+#list_oe = ['StockOptionLevel','EnvironmentSatisfaction','JobSatisfaction','WorkLifeBalance','PercentSalaryHike','JobLevel','JobInvolvement']
 list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) == 2]
-list_dd = ['Department','Education','EducationField','JobRole','MaritalStatus','NumCompaniesWorked','YearsSinceLastPromotion']
+#list_dd = ['Department','Education','EducationField','JobRole','MaritalStatus','NumCompaniesWorked','YearsSinceLastPromotion']
+list_dd = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) > 2]
 
 # DUMMIES #
-
-def encode_data(df, list_oe, list_le, list_dd):
+df_encoded=pd.get_dummies(df1,columns=list_dd)
+def encode_data(df, list_le, list_dd):
     df_encoded = df1.copy()
     
     #Get dummies
     df_encoded=pd.get_dummies(df_encoded,columns=list_dd)
     
     # Ordinal Encoding
-    oe = OrdinalEncoder()
-    for col in list_oe:
-        df_encoded[col] = oe.fit_transform(df_encoded[[col]])
+    #oe = OrdinalEncoder()
+    #for col in list_oe:
+       # df_encoded[col] = oe.fit_transform(df_encoded[[col]])
     
     # Label Encoding
     le = LabelEncoder()
@@ -58,10 +61,10 @@ def encode_data(df, list_oe, list_le, list_dd):
     
     return df_encoded
 
-df_encoded = encode_data(df1, list_oe, list_le,list_dd)
+df_encoded = encode_data(df1, list_le,list_dd)
 
 df3 = df_encoded.copy()
-
+df3
 """
 #LabelEncoder
 
