@@ -79,87 +79,33 @@ df_expl_num = df_expl_num.select_dtypes(include=np.number).drop(['EmployeeID'], 
 df_expl_num.info()
 
 # Histogramas #
-#Analizaremos los histogramas con el objetivo de identificar comportamientos no deseados en variables #
+
+# Analizaremos los histogramas con el objetivo de identificar comportamientos no deseados en variables #
 df_expl_num.hist(figsize=(15, 15), bins=20)
 
-    
-"""Se pudo identificar variables que podrian ser convertidas a categoricas como lo son: 
-    - StockOptionLevel
-    - PercentSalaryHike
-    - YearsSinceLastPromotion"""
-"""
-vars = ['StockOptionLevel', 'PercentSalaryHike', 'YearsSinceLastPromotion']
-df_no_null2 = fn.transformacion(df_no_null2, vars) # se transforman las variables a categoricas
-
-df_no_null2['StockOptionLevel'] = df_no_null2['StockOptionLevel'].replace({0.0 : 'Ninguno', 1.0:'Bajo',2.0:'Medio', 3.0:'Alto'})   #  se convierten las variables a categoricas
-df_no_null2['PercentSalaryHike'] = df_no_null2['PercentSalaryHike'].replace({11.0 : 'Bajo', 12.0:'Bajo',13.0:'Bajo',
-                                                                             14.0:'Medio', 15.0:'Medio', 16.0:'Medio',
-                                                                             17.0:'Medio', 18.0:'Medio', 19.0:'Medio',
-                                                                             20.0:'Alto', 21.0:'Alto', 22.0:'Alto', 
-                                                                             23.0:'Alto', 24.0:'Alto', 25.0:'Alto'})
-
-df_no_null2['YearsSinceLastPromotion'].value_counts()
-
-df_no_null2['YearsSinceLastPromotion'] = df_no_null2['YearsSinceLastPromotion'].replace({0:'Nunca',
-                                                              1: 'Entre 1 y 4 años',2: 'Entre 1 y 4 años', 3: 'Entre 1 y 4 años', 4: 'Entre 1 y 4 años',
-                                                              5 : 'Entre 5 y 9 años', 6: 'Entre 5 y 9 años', 7: 'Entre 5 y 9 años', 8: 'Entre 5 y 9 años', 9: 'Entre 5 y 9 años',
-                                                              10: 'Entre 10 y 15 años', 11: 'Entre 10 y 15 años', 12: 'Entre 10 y 15 años', 13: 'Entre 10 y 15 años', 14: 'Entre 10 y 15 años', 15: 'Entre 10 y 15 años'})
-
-"""
+# Se observa un comportamiento normal en la distribucion de la variable edad, sin embargo variables como
+# el salario, los años de trabajo total, años en la compañia y años con el gerente actual presentan sesgos en su distribucion
+# variables crelacionadas al desempeño del trabjador presentan un comportamiento con lo cual se las podria clasificar como categorias ya que 
+# presentan un comportamiento de tipo ordinal
 
 #Analisis descriptivo de variables numericas #
-#df_expl_num = df_expl_num.drop(['StockOptionLevel', 'PercentSalaryHike', 'YearsSinceLastPromotion'], axis=1) # eliminamos las variables que se transformaron a categoricas
+
 df_expl_num.describe()
-"""En esta tabla se pueden observar varios datos importantes de cada variable como lo son :
+"""En esta tabla se pueden observar varios datos importantes de cada variable que nos llevan a tener mejor vision de la empresa. como lo son :
     - El 75% de los empleados tienen menos de 43 años lo cual nos indica una poblacion joven en la empresa
     - El 50% de los empleados de la compañia han trabajaodo menos de 5 años en la empresa, esto nos podria indicar una cantidad siginificativa de empleados nuevos
     - El salario anual promedio de los empleados es de 65000 dolares; sin embargo el 50% de los empleados tienen un salario menor a 50000 dolares lo cual nos indica que la mayoria de los empleados tienen salarios bajos"""
 
-df_expl_num.columns
-"""
-bxp1 = df_expl_num.iloc[:,:2] # partimos la base en 3 partes para poder visualizar los boxplot de manera mas clara
+df_expl_num.columns 
 
-bxp2 = df_expl_num.iloc[:,3:6]
-
-
-plt.figure(figsize=(10, 6))
-sns.boxplot(data=bxp1)
-plt.title('Boxplot Edad y Distancia')
-plt.xlabel('Variables')
-plt.show()"""
-""" 1. Boxplot variable edad: se puede observar que la mayoria de los empleados tienen entre 30 y 40 años, admeas no se observan valores atipicos
-    2. Boxplot variable Distancia : se puede observar que el 75% de los empleados viven a menos de 10 km de la empresa, sin embargo el 15% restante vive a mas de 20 km de la empresa, lo cual podria ser un factor de desercion laboral"""
-""""
-# Analizaremos las variable monthlyincome aparte debido a que su escala es diferente a las demas variables
-plt.figure(figsize=(10, 6))
-sns.boxplot(data= df_expl_num['MonthlyIncome']) 
-plt.title('Boxplot de Salario Anual')
-plt.xlabel('Variables')
-plt.show()"""
-
-""" Boxplot de salario anual: se puede observar que la mayoria de los empleados tienen un salario bajo, ademas se observan valores atipicos
-    correspondientes a empleados con salarios muy altos que probablemente sean los empleados que llevan mas tiempo en la empresa, esto podria ser un factor de desercion laboral ya que los empleados con salarios bajos
-    podrian sentirse desmotivados"""
-
-"""
-plt.figure(figsize=(10, 6))
-sns.boxplot(data=bxp2)
-plt.title('Boxplot de Variables relacionadas con el tiempo en la empresa')
-plt.xlabel('Variables')
-plt.show()"""
-
-""" Analisis de las variables relacionadas con el tiempo en la empresa: el 75% de los empleados a trabajado menos de 15 años; esto se ve reflejadp con lo analizado en la edad
-    con lo cual puede exisir una alta correlacion entre estas dos variables .Tanto en la variable años en la compañia como en la variable referente a 
-    la promocion hay datos atipicos correspondientes a empleados que llevan mas de 20 años en la empresa y aparentemente no han sido promovidos en un gran periodo de tiempo.""
- 
 # Analisis de correlacion entre variables numericas #
-
 correlation = df_expl_num.corr()
 plt.figure(figsize=(15, 15))
 sns.heatmap(correlation, annot=True, cmap='coolwarm', fmt=".2f", linewidths=0.5)
 plt.title('Correlation Heatmap')
 plt.show()
 
+"""
 Todas las variables que hacen referencia a los años de trabajo tienen una alta correlacion entre ellas;
 esto podria ser un problema para el modelo de regresion logistica, ya que podria haber multicolinealidad; 
 la solucion propuesta es realizar un modelo de seleccion de variables para conservar solo la variable mas representativa"""
