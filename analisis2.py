@@ -82,7 +82,7 @@ for column in df_expl_num.columns:
     - StockOptionLevel
     - PercentSalaryHike
     - YearsSinceLastPromotion"""
-
+"""
 vars = ['StockOptionLevel', 'PercentSalaryHike', 'YearsSinceLastPromotion']
 df_no_null2 = fn.transformacion(df_no_null2, vars) # se transforman las variables a categoricas
 
@@ -100,9 +100,10 @@ df_no_null2['YearsSinceLastPromotion'] = df_no_null2['YearsSinceLastPromotion'].
                                                               5 : 'Entre 5 y 9 años', 6: 'Entre 5 y 9 años', 7: 'Entre 5 y 9 años', 8: 'Entre 5 y 9 años', 9: 'Entre 5 y 9 años',
                                                               10: 'Entre 10 y 15 años', 11: 'Entre 10 y 15 años', 12: 'Entre 10 y 15 años', 13: 'Entre 10 y 15 años', 14: 'Entre 10 y 15 años', 15: 'Entre 10 y 15 años'})
 
-
+"""
 #Analisis descriptivo de variables numericas #
-df_expl_num = df_expl_num.drop(['StockOptionLevel', 'PercentSalaryHike', 'YearsSinceLastPromotion'], axis=1) # eliminamos las variables que se transformaron a categoricas
+
+#df_expl_num = df_expl_num.drop(['StockOptionLevel', 'PercentSalaryHike', 'YearsSinceLastPromotion'], axis=1) # eliminamos las variables que se transformaron a categoricas
 df_expl_num.describe()
 """En esta tabla se pueden observar varios datos importantes de cada variable como lo son :
     - El 75% de los empleados tienen menos de 43 años lo cual nos indica una poblacion joven en la empresa
@@ -145,8 +146,25 @@ plt.show()
 """ Analisis de las variables relacionadas con el tiempo en la empresa: el 75% de los empleados a trabajado menos de 15 años; esto se ve reflejadp con lo analizado en la edad
     con lo cual puede exisir una alta correlacion entre estas dos variables .Tanto en la variable años en la compañia como en la variable referente a 
     la promocion hay datos atipicos correspondientes a empleados que llevan mas de 20 años en la empresa y aparentemente no han sido promovidos en un gran periodo de tiempo. """
-    
- 
+plt.figure(figsize=(10, 6))
+sns.boxplot(data= df_expl_num['PercentSalaryHike']) 
+plt.title('Boxplot de Porcentaje de aumento')
+plt.xlabel('Variables')
+plt.show()
+
+
+plt.figure(figsize=(10, 6))
+sns.boxplot(data= df_expl_num['StockOptionLevel']) 
+plt.title('Boxplot de StockOptionLevel')
+plt.xlabel('Variables')
+plt.show()
+
+
+plt.figure(figsize=(10, 6))
+sns.boxplot(data= df_expl_num['StockOptionLevel']) 
+plt.title('Boxplot de StockOptionLevel')
+plt.xlabel('Variables')
+plt.show()
 # Analisis de correlacion entre variables numericas #
 
 correlation = df_expl_num.corr()
@@ -287,8 +305,8 @@ for column in df_expl_cat.columns:
 df5 = df_no_null2.drop(['BusinessTravel','retirement_reason','TrainingTimesLastYear','PerformanceRating','TotalWorkingYears','fecha_info'], axis=1)
 df5.columns
 
-base_seleccion = df5.copy()
+base_seleccion2 = df5.copy()
 
-base_seleccion.to_csv('data_hr_proyect/base_seleccion.csv', index= False)
+base_seleccion2.to_csv('data_hr_proyect/base_seleccion.csv', index= False)
 
 
