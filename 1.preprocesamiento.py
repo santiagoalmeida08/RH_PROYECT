@@ -23,7 +23,7 @@ df_empl2.info() # podemos observar que las unicas variables sin nulos son emplye
 
 # En caso de que se encuentren datos nulos con un bajo porcentaje de representatividad se procedera a eliminarlos#
 
-df_empl2 = fn.nulos(df_empl2, ['EnvironmentSatisfaction', 'JobSatisfaction', 'WorkLifeBalance'])
+df_empl2 = fn.nulos(df_empl2)
 df_empl2.isnull().sum()
 
 # TRANSFORMACION DE VARIABLES #
@@ -44,12 +44,12 @@ df_empl4['WorkLifeBalance'].value_counts()
 """Podemos observar que todas las variables tienen la misma escala de 1 a 4,
 por lo cual podemos definir una recategorizacion asi : """
 
-dict = { 1.0:'Muy insatisfecho', 2.0:'Insatisfecho', 3.0:'Satisfecho', 4.0:'Muy satisfecho'}
-variables = ['EnvironmentSatisfaction', 'JobSatisfaction', 'WorkLifeBalance']
+#dict = { 1.0:'Muy insatisfecho', 2.0:'Insatisfecho', 3.0:'Satisfecho', 4.0:'Muy satisfecho'}
+#variables = ['EnvironmentSatisfaction', 'JobSatisfaction', 'WorkLifeBalance']
 df_empl5 = df_empl4.copy()
 
-for i in variables:
-    df_empl5[i] = df_empl5[i].replace(dict) #transformacion de las variables a categoricas
+#for i in variables:
+ #   df_empl5[i] = df_empl5[i].replace(dict) #transformacion de las variables a categoricas
 
 df_empl5= df_empl5.rename(columns= {'DateSurvey':'fecha'})# se quiere que en todas las bases la variable fecha tenga el mismo nombre
 
@@ -80,7 +80,8 @@ df_req1['EmployeeID'] = df_req1['EmployeeID'].astype('object')
 df_req1.info()
 
 # Evaluación variables categoricas #
-df_req1['Attrition'].value_counts() #variable referente a abandonar la empresa
+
+df_req1['Attrition'].value_counts() #variable objetivo
 df_req1['retirementType'].value_counts() # las personas se van de la empresa por resignacion o por despido
 df_req1['resignationReason'].value_counts() # razones de resignacion
 
@@ -121,7 +122,7 @@ df_g2.isnull().sum()
 de datos que contiene la base de datos y ademas es importante conocer la información de todos los empleados por lo cual por ahora no se van a eliminar las filas 
 que contienen estos datos nulos """
 
-df_g2 = fn.nulos(df_g2, ['NumCompaniesWorked', 'TotalWorkingYears']) # eliminamos nulos 
+df_g2 = fn.nulos(df_g2) # eliminamos nulos 
 
 df_g2[df_g2.duplicated()]#filtra duplicados 
 #no se encuentran datos duplicados
@@ -132,17 +133,17 @@ df_g3['EmployeeCount'].value_counts() #SOLO TIENE UNA CATEGORIA POR LO CUAL SE T
 df_g3['Over18'].value_counts() #solo tiene una categoria por lo cual se toma la decision de eliminar esta variable
 df_g3['StandardHours'].value_counts() # todos los valores son iguales, tambien se toma la decision de eliminar esta variable
 
-df_g3['JobLevel'].value_counts()#esta variable se va a convertir a variable categorica con 5 categorias
-df_g3['Education'].value_counts()#Se va a convertir a una variable categorica de 5 categorias
-df_g3['NumCompaniesWorked'].value_counts()#Se va a convertir a una variable categorica agrupando los valores
-df_g3['TrainingTimesLastYear'].value_counts()#Se va a convertir a una variable categorica agrupando los valores
+
+df_g3['JobLevel'].value_counts()#esta variable se va a convertir a object
+df_g3['Education'].value_counts()#Se va a convertir a object y categorizar
+
 
 #Transformacion de variables
 
-va3 = ['StockOptionLevel', 'JobLevel', 'Education', 'NumCompaniesWorked', 'TotalWorkingYears','EmployeeID']
+va3 = ['JobLevel','Education','EmployeeID']
 df_g3 = fn.transformacion(df_g3, va3)
 
-
+""""
 df_g3['NumCompaniesWorked'] = df_g3['NumCompaniesWorked'].replace({0:'Al menos 2 empresas', 1:'Al menos 2 empresas', 2:'Al menos 2 empresas', 
                                                                   3:'De 3 a 5 empresas', 4:'De 3 a 5 empresas', 5:'De 3 a 5 empresas', 
                                                                   6:'Mas de 5 empresas', 7:'Mas de 5 empresas', 8:'Mas de 5 empresas', 9:'Mas de 5 empresas'})
@@ -151,18 +152,15 @@ df_g3['NumCompaniesWorked'] = df_g3['NumCompaniesWorked'].replace({0:'Al menos 2
 df_g3['TrainingTimesLastYear'] = df_g3['TrainingTimesLastYear'].replace({0:'Ningun entrenamiento', 
                                                                    1:'Al menos 3 semanas', 2:'Al menos 3 semanas', 3:'Al menos 3 semanas', 
                                                                    4:'De 4 a 5 semanas', 5:'De 4 a 5 semanas', 6:'De 4 a 5 semanas'})
-
+                                                                   
+"""
 df_g3['Education'] = df_g3['Education'].replace({1:'Escuela secundaria', 2:'Licenciatura', 3:'Maestria', 4:'Doctorado', 5:'Posdoctorado'})
 
-df_g3['JobLevel'] = df_g3['JobLevel'].replace({1:'Nivel 1', 2:'Nivel 2', 3:'Nivel 3', 4:'Nivel 4', 5:'Nivel 4'}) # se entiende a joblevel como el nivel jerarquico del empleado
+#df_g3['JobLevel'] = df_g3['JobLevel'].replace({1:'Nivel 1', 2:'Nivel 2', 3:'Nivel 3', 4:'Nivel 4', 5:'Nivel 4'}) # se entiende a joblevel como el nivel jerarquico del empleado
 
 
 df_g4= df_g3.drop(['EmployeeCount','Over18', 'StandardHours'], axis=1)#eliminar variables que no son representativas para el analisis
 df_g4= df_g4.rename(columns= {'InfoDate':'fecha'})# se quiere que en todas las bases la variable fecha tenga el mismo nombre
-
-df_g4['NumCompaniesWorked'].value_counts()
-df_g4['TrainingTimesLastYear'].value_counts()
-df_g4['Education'].value_counts()
 
 #Como la fecha se encuentra en formato object vamos a convertirlo en formato fecha
 df_g4['fecha']=pd.to_datetime(df_g4['fecha'])
@@ -186,18 +184,18 @@ df_man2[df_man2.duplicated()]#filtra duplicados
 #no se encuentran datos duplicados
 df_man3=df_man2.copy()
 df_man3
+
 #Como la fecha se encuentra en formato object vamos a convertirlo en formato fecha
 df_man3["SurveyDate"]=pd.to_datetime(df_man3['SurveyDate'], format="%d/%m/%Y")
 df_man3['EmployeeID'] = df_man3['EmployeeID'].astype('object')
 df_man3 = df_man3.rename(columns= {'SurveyDate':'fecha'})# se quiere que en todas las bases la variable fecha tenga el mismo nombre
 
 #ANALISIS DE VARIABLES Y CATEGORIAS 
-
 df_man3['JobInvolvement'].value_counts()
 df_man3['PerformanceRating'].value_counts()
 
-df_man3['JobInvolvement'] = df_man3['JobInvolvement'].replace({1:'Bajo', 2:'Bajo', 3:'Medio', 4:'Alto'})
-df_man3['PerformanceRating'] = df_man3['PerformanceRating'].replace({3:'Bajo', 4:'Alto'})
+df_man3['JobInvolvement'] = df_man3['JobInvolvement'].astype('object')
+#df_man3['PerformanceRating'] = df_man3['PerformanceRating'].replace({3:'Bajo', 4:'Alto'})
 
 df_man3.info() 
 
