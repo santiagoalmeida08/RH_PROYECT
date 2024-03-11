@@ -25,12 +25,12 @@ from sklearn.decomposition import PCA
 from sklearn.feature_selection import SelectKBest, chi2
 
 #Dataframes
-basefinal = 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/basefinal.csv'
+basefinal = 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/basefinal2.csv'
 df_bfinal = pd.read_csv(basefinal, sep=',')
 
 df_bfinal.info() #la base final cuenta con 29 variables con 4410 datos en cada una
 
-base16 = 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/baseprediccion.csv' #base para predicciones
+base16 = 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/baseprediccion2.csv' #base para predicciones
 df_pred = pd.read_csv(base16, sep = ',')
 df_pred.info() #la base de prediccion cuenta con 29 variables con 4410 datos en cada una4
 
@@ -161,10 +161,19 @@ plt.show()
 
 
 plt.figure(figsize=(10, 6))
-sns.boxplot(data= df_expl_num['StockOptionLevel']) 
+sns.boxplot(data= df_expl_num['JobLevel']) 
 plt.title('Boxplot de StockOptionLevel')
 plt.xlabel('Variables')
 plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.boxplot(data= df_expl_num['NumCompaniesWorked']) 
+plt.title('Boxplot de StockOptionLevel')
+plt.xlabel('Variables')
+plt.show()
+
+
+
 # Analisis de correlacion entre variables numericas #
 
 correlation = df_expl_num.corr()
@@ -176,7 +185,7 @@ plt.show()
 """Todas las variables que hacen referencia a los años de trabajo tienen una alta correlacion entre ellas;
 esto podria ser un problema para el modelo de regresion logistica, ya que podria haber multicolinealidad; 
 la solucion propuesta es realizar un modelo de seleccion de variables para conservar solo la variable mas representativa"""
-
+#num companies worked tiene correlacion con performance reiting
 # Analisis Bivariado #
 
 df_biv_num = df_expl_num.copy()
@@ -301,12 +310,12 @@ for column in df_expl_cat.columns:
     -TotalWorkingYears"""
     
 # Vamos a cargar a la carpeta data una base con las variables seleccionadas para utilizarla en la seleccion de modelos #
-
-df5 = df_no_null2.drop(['BusinessTravel','retirement_reason','TrainingTimesLastYear','PerformanceRating','TotalWorkingYears','fecha_info'], axis=1)
+df_no_null2.columns
+df5 = df_no_null2.drop(['BusinessTravel','retirement_reason','TrainingTimesLastYear','PerformanceRating','TotalWorkingYears','fecha_info', 'PerformanceRating'], axis=1)
 df5.columns
 
 base_seleccion2 = df5.copy()
 
-base_seleccion2.to_csv('data_hr_proyect/base_seleccion.csv', index= False)
+base_seleccion2.to_csv('data_hr_proyect/base_seleccion2.csv', index= False)
 
 
