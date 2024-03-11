@@ -23,7 +23,6 @@ from sklearn.model_selection import cross_val_predict, cross_val_score, cross_va
 
 # Cargar el DataFrame
 
-
 data_seleccion= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/base_seleccion.csv'
 
 df = pd.read_csv(data_seleccion,sep=',') ## BASE ORIGINAL ##
@@ -181,24 +180,44 @@ y_pred = model_log.predict(df4)
 cm = confusion_matrix(y, y_pred)
 cmd = ConfusionMatrixDisplay(cm, display_labels=model_log.classes_)
 cmd.plot()
-    
+
+#matriz confusion para dt_sel
+model_arb = DecisionTreeClassifier(max_depth=4, random_state=42)
+model_arb.fit(df4,y)
+
+y_pred = model_arb.predict(df4)
+cm = confusion_matrix(y, y_pred)
+cmd = ConfusionMatrixDisplay(cm, display_labels=model_arb.classes_)
+cmd.plot()
+
+#matriz confusion para gb_Sel
+model_gb = GradientBoostingClassifier()
+model_gb.fit(df4,y)
+
+y_pred = model_gb.predict(df4)
+cm = confusion_matrix(y, y_pred)
+cmd = ConfusionMatrixDisplay(cm, display_labels=model_gb.classes_)
+cmd.plot()
 
 
-# Ajuste de hiperparametros del modelo ganador DecisionTreeClasifier #
-from scipy.stats import uniform, poisson
+
+
+# Ajuste de hiperparametros del modelo ganador #
+
 from sklearn.model_selection import RandomizedSearchCV
 
-# setup parameter space
+#Definicion de parametros para regresion logistica
 
-parameters = {'criterion':['gini','entropy'],
-              'max_depth': [30,5,10,15], # mex_depth es la profundidad del arbol
-              'min_samples_split': [20,40,50,10], # min_samples_split es el numero minimo de muestras que se requieren para dividir un nodo
-              'max_leaf_nodes': [25,10,15,20]} # max_leaf_nodes es el numero maximo de nodos finales
+parameters = {
+    'penalty': ['l1', 'l2'], # penalización l1 y l2 ridge y lasso
+    'fit_intercept': [True, False], # si se ajusta la intersección
+    'max_iter': [100, 500, 1000]
+} # max_leaf_nodes es el numero maximo de nodos finales
 
 # create an instance of the randomized search object
-r1 = RandomizedSearchCV(DecisionTreeClassifier(), parameters, cv=5, n_iter=100, random_state=42, n_jobs=-1, scoring='f1') 
+r1 = RandomizedSearchCV(LogisticRegression(), parameters, cv=5, n_iter=100, random_state=42, n_jobs=-1, scoring='accuracy') 
 
-r1.fit(df4,y)
+r1.fit(df4,y) #df4 es el dataframe con las variables seleccionadas
 
 resultados = r1.cv_results_
 r1.best_params_
@@ -220,7 +239,7 @@ joblib.dump(scaler, "salidas\\scaler.pkl") ## para normalizar datos con MinMaxSc
 
 #### convertir resultado de evaluacion entrenamiento y evaluacion en data frame para 
 
-eval=cross_validate(rf_final,df4,y,cv=5,scoring='f1',return_train_score=True) 
+eval=cross_validate(rf_final,df4,y,cv=5,scoring='accuracy',return_train_score=True) 
 
 train_rf=pd.DataFrame(eval['train_score'])
 test_rf=pd.DataFrame(eval['test_score'])
@@ -280,37 +299,6 @@ cmd = ConfusionMatrixDisplay(cm, display_labels=model_arb.classes_)
 cmd.plot()
 
 print(metrics.classification_report(y_test, model_arb.predict(X_test)))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
