@@ -32,7 +32,7 @@ df.isnull().sum()
 df = df.drop('EmployeeID', axis = 1)
 
 df1 = df.copy()
-
+df1.info()
 list_cat = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object']
 list_oe = ['StockOptionLevel','EnvironmentSatisfaction','JobSatisfaction','WorkLifeBalance','PercentSalaryHike','JobLevel','JobInvolvement']
 list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) == 2]
