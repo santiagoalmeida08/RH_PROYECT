@@ -226,7 +226,7 @@ import joblib
 
 joblib.dump(rf_final, "salidas\\rf_final.pkl") # Modelo ganador con afinamiento de hipermarametros 
 joblib.dump(list_cat, "salidas\\list_cat.pkl") ### para realizar imputacion
-joblib.dump(list_oe, "salidas\\list_oe.pkl")  ### para ordinal encoding
+#joblib.dump(list_oe, "salidas\\list_oe.pkl")  ### para ordinal encoding
 joblib.dump(list_le, "salidas\\list_le.pkl")  ### para label encoding
 joblib.dump(list_dd, "salidas\\list_dd.pkl")  ### para dummies
 joblib.dump(var_names, "salidas\\var_names.pkl") ### para variables con que se entrena modelo
