@@ -33,9 +33,38 @@ df = df.drop('EmployeeID', axis = 1)
 
 df1 = df.copy()
 
+list_cat = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object']
+list_oe = ['StockOptionLevel','EnvironmentSatisfaction','JobSatisfaction','WorkLifeBalance','PercentSalaryHike','JobLevel','JobInvolvement']
+list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) == 2]
+list_dd = ['Department','Education','EducationField','JobRole','MaritalStatus','NumCompaniesWorked','YearsSinceLastPromotion']
+
 # DUMMIES #
 
+def encode_data(df, list_oe, list_le, list_dd):
+    df_encoded = df1.copy()
+    
+    #Get dummies
+    df_encoded=pd.get_dummies(df_encoded,columns=list_dd)
+    
+    # Ordinal Encoding
+    oe = OrdinalEncoder()
+    for col in list_oe:
+        df_encoded[col] = oe.fit_transform(df_encoded[[col]])
+    
+    # Label Encoding
+    le = LabelEncoder()
+    for col in list_le:
+        df_encoded[col] = le.fit_transform(df_encoded[col])
+    
+    return df_encoded
+
+df_encoded = encode_data(df1, list_oe, list_le,list_dd)
+
+df3 = df_encoded.copy()
+
+"""
 #LabelEncoder
+
 df2 = df1.copy()   
 le = LabelEncoder() # 0 = No y 1 = Yes
 
@@ -50,13 +79,13 @@ for i in df2.columns:
 ord =  ['StockOptionLevel','EnvironmentSatisfaction','JobSatisfaction','WorkLifeBalance','PercentSalaryHike','JobLevel','JobInvolvement']
 oe = OrdinalEncoder()
 
-for i in ord :
+for i in ord : 
     df2[i]=oe.fit_transform(df2[[i]])
 
 
 #Get Dummies
 df3 = pd.get_dummies(df2)
-df3.head()
+df3.columns"""
 
 #Normalizacion
 
@@ -155,7 +184,6 @@ f1s.plot(kind='box') ### gráfico para modelos sel y todas las variables
 
 f1s.mean() # se observa que el modelo de regresión logistica tiene el mejor desempeño en el modelo de variables seleccionadas
 
-
 # Ajuste de hiperparametros del modelo ganador DecisionTreeClasifier #
 from scipy.stats import uniform, poisson
 from sklearn.model_selection import RandomizedSearchCV
@@ -178,6 +206,55 @@ pd_resultados=pd.DataFrame(resultados)
 pd_resultados[["params","mean_test_score"]].sort_values(by="mean_test_score", ascending=False)
 
 rf_final=r1.best_estimator_ ### Guardar el modelo con hyperparameter tunning
+
+# Exportar modelo ganador #
+import joblib
+
+
+joblib.dump(rf_final, "salidas\\rf_final.pkl") # Modelo ganador con afinamiento de hipermarametros 
+joblib.dump(list_cat, "salidas\\list_cat.pkl") ### para realizar imputacion
+joblib.dump(list_oe, "salidas\\list_oe.pkl")  ### para ordinal encoding
+joblib.dump(list_le, "salidas\\list_le.pkl")  ### para label encoding
+joblib.dump(list_dd, "salidas\\list_dd.pkl")  ### para dummies
+joblib.dump(var_names, "salidas\\var_names.pkl") ### para variables con que se entrena modelo
+joblib.dump(scaler, "salidas\\scaler.pkl") ## para normalizar datos con MinMaxScaler
+
+
+
+### funcion para cargar objeto guardado ###
+rf_final = joblib.load("salidas\\rf_final.pkl")
+m_lreg = joblib.load("salidas\\m_lreg.pkl")
+list_cat=joblib.load("salidas\\list_cat.pkl")
+list_dummies=joblib.load("salidas\\list_dummies.pkl")
+var_names=joblib.load("salidas\\var_names.pkl")
+scaler=joblib.load("salidas\\scaler.pkl") 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # PRUEBA DEL DESEMPEÑO DE CLASIFICADOR CON HIPERPARAMETROS AJUSTADOS #
 
