@@ -243,3 +243,59 @@ train_test_rf.columns=['train_score','test_score']
 train_test_rf
 
 train_test_rf["test_score"].mean()
+
+
+### MODELO SIN KFOLD ###
+
+# Modelo Arboles de desicion #
+
+
+
+model_arb = DecisionTreeClassifier(class_weight='balanced', max_depth=4, random_state=42)
+
+#Divide la data en train y test
+X_train, X_test, y_train, y_test = train_test_split(X_esc, y, test_size=0.2, random_state=42)
+
+# Oversampling
+os = RandomOverSampler() 
+x_train_res, y_train_res = os.fit_resample(X_train, y_train)
+
+model_arb.fit(x_train_res, y_train_res)
+
+
+y_pred = model_arb.predict(X_test)
+
+#Matriz de confusión #
+cm = confusion_matrix(y_test, y_pred)
+cmd = ConfusionMatrixDisplay(cm, display_labels=model_arb.classes_)
+cmd.plot()
+
+print(metrics.classification_report(y_test, model_arb.predict(X_test)))
+
+# AFINAMIENTO #
+
+parameters = {'criterion':['gini','entropy'],
+              'max_depth': [3,5,10,15], # mex_depth es la profundidad del arbol
+              'min_samples_split': [2,4,5,10], # min_samples_split es el numero minimo de muestras que se requieren para dividir un nodo
+              'max_leaf_nodes': [5,10,15,20]} # max_leaf_nodes es el numero maximo de nodos finales
+
+# create an instance of the randomized search object
+from sklearn.model_selection import RandomizedSearchCV
+r45 = RandomizedSearchCV(DecisionTreeClassifier(), parameters, cv=5, n_iter=100, random_state=42, n_jobs=-1, scoring='f1') 
+
+r45.fit(x_train_res,y_train_res)
+
+resultados = r45.cv_results_
+r45.best_params_
+pd_resultados=pd.DataFrame(resultados)
+pd_resultados[["params","mean_test_score"]].sort_values(by="mean_test_score", ascending=False)
+
+m_sink=r45.best_estimator_ ### Guardar el modelo con hyperparameter tunning
+
+#calcular matriz de confusion
+y_pred = m_sink.predict(X_test)
+cm = confusion_matrix(y_test, y_pred)
+cmd = ConfusionMatrixDisplay(cm, display_labels=m_sink.classes_)
+cmd.plot()
+
+print(metrics.classification_report(y_test, m_sink.predict(X_test)))

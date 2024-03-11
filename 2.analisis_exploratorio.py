@@ -61,6 +61,16 @@ df_no_null2 = df_no_null.copy()
 df_no_null2 = df_no_null2.drop(['fecha_retiro'], axis=1) # se elimina la variable fecha_retiro ya que solo fue util para union de bases
 df_no_null2.info()
 
+# Analisis variable objetivo # diagrama de barras
+
+sns.countplot(x='Attrition', data=df_no_null2)
+plt.title('Distribución de la variable objetivo')
+plt.xlabel('Attrition')
+plt.ylabel('Frecuencia')
+plt.show()
+
+# se puede observar que la mayoria de los empleados no han abandonado la empresa, sin embargo la variaable presenta un desbalance
+#por lo cual se tendra en cuenta para futuros modelos
 
 # Exploración Variables Numercias #
 
