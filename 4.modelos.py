@@ -27,7 +27,7 @@ data_seleccion= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/
 
 df = pd.read_csv(data_seleccion,sep=',') ## BASE ORIGINAL ##
 
-df.dtypes
+df.dtypes  # NO se tienen : BussinessTravel,TotalWorkingYears,TrainingTimesLastYear, PerformanceRating
 
 df.isnull().sum()
 df = df.drop('EmployeeID', axis = 1)
@@ -83,7 +83,9 @@ for col in df3.columns:
     if df3[col].dtypes == "int64":
         v_num.append(col)
 
-scaler = MinMaxScaler()
+from sklearn.preprocessing import RobustScaler
+
+scaler = RobustScaler()
 for col in v_num:
     df3[[col]] = scaler.fit_transform(df3[[col]])
 
@@ -154,8 +156,8 @@ def medir_modelos(modelos,scoring,X,y,cv):
     metric_modelos.columns=["gard_boost","decision_tree","random_forest","reg_logistic"]
     return metric_modelos
 
-f1sco_df = medir_modelos(modelos,"accuracy",X_esc,y,10)  #se definen 10 iteraciones para tener mejor visión del desempeño en el boxplot
-f1dco_var_sel = medir_modelos(modelos,"accuracy",df4,y,10)
+f1sco_df = medir_modelos(modelos,"f1",X_esc,y,10)  #se definen 10 iteraciones para tener mejor visión del desempeño en el boxplot
+f1dco_var_sel = medir_modelos(modelos,"f1",df4,y,10)
 
 
 f1s=pd.concat([f1sco_df,f1dco_var_sel],axis=1) 
