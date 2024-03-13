@@ -86,7 +86,7 @@ var_names.shape
 df_var_sel = df3[var_names]
 df_var_sel.info()
 
-# Division data en train y test kfold-croos-validation #
+# Analisis de rendimiento de modelos#
 
 df4 = df_var_sel.copy()
 f1sco_df = fn.medir_modelos(modelos,"f1",X_esc,y,15)  #se definen 15 iteraciones para tener mejor visión del desempeño en el boxplot
@@ -117,8 +117,8 @@ parameters = {
     'max_depth': [5, 10, 15],
     'min_samples_split': [2, 5, 10],
     'min_samples_leaf': [1, 2, 4],
-    'max_features': ['auto', 'sqrt', 'log2'] #max_feauters se refiere a la cantidad de variables que se toman en cuenta para hacer la mejor division
-}
+    'max_features': ['auto', 'sqrt', 'log2']} #max_feauters se refiere a la cantidad de variables que se toman en cuenta para hacer la mejor division
+
 # create an instance of the randomized search object
 r1 = RandomizedSearchCV(DecisionTreeClassifier(), parameters, cv=5, n_iter=100, random_state=42, n_jobs=-1, scoring='accuracy') 
 
