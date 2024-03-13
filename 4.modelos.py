@@ -14,7 +14,6 @@ from sklearn.model_selection import RandomizedSearchCV
 from sklearn.preprocessing import RobustScaler
 import funciones as fn
 
-
 # Importar el dataframe deputado en el analisis exploratorio
 
 data_seleccion= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/base_seleccion2.csv'
@@ -45,8 +44,7 @@ list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]
 list_dd = ['Department','Education','EducationField','JobRole','MaritalStatus','BusinessTravel']
 
 # Codificación de variables 
-
-df_encoded = fn.encode_data(df1, list_le,list_dd)
+df_encoded = fn.encode_data(df1, list_le,list_dd,list_oe)
 df3 = df_encoded.copy()
 df3.dtypes
 

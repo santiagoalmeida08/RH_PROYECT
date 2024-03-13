@@ -62,7 +62,8 @@ def medir_modelos(modelos,scoring,X,y,cv):
     return metric_modelos   
 
 # FUNCION 6#
-def encode_data(df, list_le, list_dd,list_oe):    
+def encode_data(df, list_le, list_dd,list_oe): 
+    df_encoded = df.copy()   
     #Get dummies
     df_encoded=pd.get_dummies(df_encoded,columns=list_dd)
     
