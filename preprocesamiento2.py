@@ -563,13 +563,14 @@ df.dtypes  # NO se tienen : BussinessTravel,TotalWorkingYears,TrainingTimesLastY
 
 df.isnull().sum()
 
+df = df5.drop(['BusinessTravel','TotalWorkingYears'], axis = 1)
 df1 = df.copy()
 df1.info()
 
 df1['JobLevel'] = df1['JobLevel'].astype('object')  
 
 df1['NumCompaniesWorked'] = df1['NumCompaniesWorked'].astype('int64')
-df1['TotalWorkingYears'] = df1['TotalWorkingYears'].astype('int64')
+#df1['TotalWorkingYears'] = df1['TotalWorkingYears'].astype('int64')
 df1['PercentSalaryHike'] = df1['PercentSalaryHike'].astype('int64')
 df1['WorkLifeBalance'] = df1['WorkLifeBalance'].astype('int64')
 df1['JobSatisfaction'] = df1['JobSatisfaction'].astype('int64')
@@ -578,7 +579,7 @@ df1['EnvironmentSatisfaction'] = df1['EnvironmentSatisfaction'].astype('int64')
 list_cat = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object']
 list_oe = ['JobLevel']
 list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) == 2]
-list_dd = ['BusinessTravel','Department','Education','EducationField','JobRole','MaritalStatus']
+list_dd = ['Department','Education','EducationField','JobRole','MaritalStatus']
 
 
 df1.dtypes
@@ -627,7 +628,7 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.preprocessing import MinMaxScaler 
 from sklearn.preprocessing import StandardScaler
 
-scaler = RobustScaler()
+scaler = StandardScaler()
 for col in v_num:
     df3[[col]] = scaler.fit_transform(df3[[col]])
 
@@ -660,7 +661,7 @@ def sel_variables(modelos,X,y,threshold):
     return var_names_ac
 
 
-var_names= sel_variables(modelos,X_esc,y,threshold="3*mean") 
+var_names= sel_variables(modelos,X_esc,y,threshold="2.7*mean") 
 var_names.shape
 
 # Al utiizar numeros menores se aceptaban mas variables sin embargo el desempeño seguia siendo el mosmo por lo cual
