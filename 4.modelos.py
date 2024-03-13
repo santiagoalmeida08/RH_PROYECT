@@ -1,43 +1,39 @@
-## MODELOS ###
+# Modelos 
 
+#Paquetes para manejo de datos
 import pandas as pd 
 import numpy as np
+from sklearn.feature_selection import SelectFromModel
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import accuracy_score,confusion_matrix, ConfusionMatrixDisplay, f1_score
-import matplotlib.pyplot as plt
-from sklearn.tree import DecisionTreeClassifier
 from sklearn import metrics
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.ensemble import RandomForestClassifier 
-from imblearn.over_sampling import RandomOverSampler
-from collections import Counter
-from sklearn.utils import resample
+from sklearn.metrics import accuracy_score,confusion_matrix, ConfusionMatrixDisplay, f1_score
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OrdinalEncoder
-from sklearn.feature_selection import SelectFromModel
+from imblearn.over_sampling import RandomOverSampler
 from sklearn.model_selection import cross_val_predict, cross_val_score, cross_validate
-from sklearn.impute import SimpleImputer
-
-# Cargar el DataFrame
+from sklearn.model_selection import RandomizedSearchCV
+from xgboost import XGBClassifier
+# Importar el dataframe deputado en el analisis exploratorio
 
 data_seleccion= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/base_seleccion2.csv'
 df = pd.read_csv(data_seleccion,sep=',')
-df.info() 
-
 df.isnull().sum() # Verificar valores nulos
 
 df1 = df.copy()
 df1 = df1.drop('EmployeeID', axis = 1) # Eliminar columna EmployeeID ya que no aporta información relevante
-df1.info()
+df1.info()#Visualizar tipo de datos y verificar variables 
 
 df1['JobLevel'] = df1['JobLevel'].astype('object')
 df1['Attrition'] = df1['Attrition'].astype('object')
 df1['Attrition'].value_counts()# Cambiar valores de Attrition a 1 y 0
+
 #Cambiamos el formato de las variables a int64 para poder trabajar con ellas en un solo formato
 for i in df1.columns:
     if df1[i].dtypes == "float64":
@@ -47,6 +43,7 @@ for i in df1.columns:
 
 df1.dtypes # Verificar cambios
 
+#Guardamos las variables categoricas en una lista para poder realizar la codificación de las variables acorde a sus variables 
 list_cat = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object']
 list_oe = ['JobLevel']
 list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) == 2]
@@ -54,16 +51,16 @@ list_dd = ['Department','Education','EducationField','JobRole','MaritalStatus','
 
 # Codificación de variables 
 
-def encode_data(df, list_le,list_oe, list_dd):
+def encode_data(df, list_le, list_dd):
     df_encoded = df1.copy()
     
     #Get dummies
     df_encoded=pd.get_dummies(df_encoded,columns=list_dd)
     
     # Ordinal Encoding
-    oe = OrdinalEncoder()
-    for col in list_oe:
-        df_encoded[col] = oe.fit_transform(df_encoded[[col]])
+    #oe = OrdinalEncoder()
+    #for col in list_oe:
+    #    df_encoded[col] = oe.fit_transform(df_encoded[[col]])
     
     # Label Encoding
     le = LabelEncoder()
@@ -72,7 +69,7 @@ def encode_data(df, list_le,list_oe, list_dd):
     
     return df_encoded
 
-df_encoded = encode_data(df1, list_le,list_oe,list_dd)
+df_encoded = encode_data(df1, list_le,list_dd)
 
 df3 = df_encoded.copy()
 
@@ -96,7 +93,7 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.preprocessing import MinMaxScaler 
 from sklearn.preprocessing import StandardScaler
 
-scaler = StandardScaler()
+scaler = RobustScaler()
 for col in v_num:
     df3[[col]] = scaler.fit_transform(df3[[col]])
 
@@ -111,6 +108,7 @@ model_gb = GradientBoostingClassifier()
 model_arb = DecisionTreeClassifier() 
 model_log = LogisticRegression( max_iter=1000, random_state=42)
 model_rand = RandomForestClassifier()
+
 
 modelos  = list([model_gb,model_arb,model_log,model_rand])
 
@@ -160,30 +158,19 @@ def medir_modelos(modelos,scoring,X,y,cv):
     metric_modelos.columns=["gard_boost","decision_tree","random_forest","reg_logistic"]
     return metric_modelos
 
-f1sco_df = medir_modelos(modelos,"f1",X_esc,y,15)  #se definen 10 iteraciones para tener mejor visión del desempeño en el boxplot
+f1sco_df = medir_modelos(modelos,"f1",X_esc,y,15)  #se definen 15 iteraciones para tener mejor visión del desempeño en el boxplot
 f1dco_var_sel = medir_modelos(modelos,"f1",df4,y,15)
-
 
 f1s=pd.concat([f1sco_df,f1dco_var_sel],axis=1) 
 f1s.columns=['rlog', 'dtree', 'rforest', 'gboosting',
        'rl_Sel', 'dt_sel', 'rf_sel', 'gb_Sel']
 
+f1s.plot(kind='box') # Boxplot de f1 score para cada modelo con todas las variables y con las variables seleccionadas
+#En el boxplot de rendimiento observamos que los modelos con mayor rendimiento son descision tree clasifier y gardient boosting, con un rendimiento medio de
+#0.6 y 0.7 respectivamente. Usaremos gardient boosting ya que es el modelo con mejor rendimiento y aunque su interpretabilidad no es la mejor; ademas
+# de un mejor rendimiento tiene una menor varianza en el rendimiento.
 
-f1s.plot(kind='box') ### gráfico para modelos sel y todas las variables
-
-f1s.mean() 
-"""En los boxplots podemos observar que el mejor desempeño con las variables seleccionadas y con todas las variables lo tiene decision tree.
-Ademas de esto una pequeña diferencia de desempeño (2%) entre el modelo con todas las variables y las variables seleccionadas; se va a trabajar con 
-el modelo de variables seleccionadas, sacrificando ese 2% de desempeño pero mejorando la interpretabilidad del modelo y ahorrando recursos computacionales."""
-
-#Matriz confusion para rl_Sel
-model_log = LogisticRegression( max_iter=1000, random_state=42)
-model_log.fit(df4,y)
-
-y_pred = model_log.predict(df4)
-cm = confusion_matrix(y, y_pred)
-cmd = ConfusionMatrixDisplay(cm, display_labels=model_log.classes_)
-cmd.plot()
+f1s.mean()  # Media de rendimiendo para cada variable 
 
 #matriz confusion para dt_sel
 model_arb = DecisionTreeClassifier(max_depth=4, random_state=42)
@@ -204,22 +191,12 @@ cmd = ConfusionMatrixDisplay(cm, display_labels=model_gb.classes_)
 cmd.plot()
 
 
+#Definicion de parametros para gardient boosting
 
-
-# Ajuste de hiperparametros del modelo ganador #
-
-from sklearn.model_selection import RandomizedSearchCV
-
-#Definicion de parametros para regresion logistica
-
-parameters = {
-    'penalty': ['l1', 'l2'], # penalización l1 y l2 ridge y lasso
-    'fit_intercept': [True, False], # si se ajusta la intersección
-    'max_iter': [100, 500, 1000]
-} # max_leaf_nodes es el numero maximo de nodos finales
+parameters = { }
 
 # create an instance of the randomized search object
-r1 = RandomizedSearchCV(LogisticRegression(), parameters, cv=5, n_iter=100, random_state=42, n_jobs=-1, scoring='accuracy') 
+r1 = RandomizedSearchCV(GradientBoostingClassifier(), parameters, cv=5, n_iter=100, random_state=42, n_jobs=-1, scoring='accuracy') 
 
 r1.fit(df4,y) #df4 es el dataframe con las variables seleccionadas
 
