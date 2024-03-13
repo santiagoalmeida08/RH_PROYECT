@@ -1,3 +1,4 @@
+## MODELOS ###
 
 import pandas as pd 
 import numpy as np
@@ -20,39 +21,40 @@ from sklearn.utils import resample
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.feature_selection import SelectFromModel
 from sklearn.model_selection import cross_val_predict, cross_val_score, cross_validate
+from sklearn.impute import SimpleImputer
 
 # Cargar el DataFrame
 
-data_seleccion= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/base_seleccion.csv'
+data_seleccion= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/base_seleccion2.csv'
+df = pd.read_csv(data_seleccion,sep=',')
+df.info() 
 
-df = pd.read_csv(data_seleccion,sep=',') ## BASE ORIGINAL ##
-
-df.dtypes  # NO se tienen : BussinessTravel,TotalWorkingYears,TrainingTimesLastYear, PerformanceRating
-
-df.isnull().sum()
-df = df.drop('EmployeeID', axis = 1)
+df.isnull().sum() # Verificar valores nulos
 
 df1 = df.copy()
+df1 = df1.drop('EmployeeID', axis = 1) # Eliminar columna EmployeeID ya que no aporta información relevante
 df1.info()
 
-df1['JobLevel'] = df1['JobLevel'].astype('object')  
+df1['JobLevel'] = df1['JobLevel'].astype('object')
+df1['Attrition'] = df1['Attrition'].astype('object')
+df1['Attrition'].value_counts()# Cambiar valores de Attrition a 1 y 0
+#Cambiamos el formato de las variables a int64 para poder trabajar con ellas en un solo formato
+for i in df1.columns:
+    if df1[i].dtypes == "float64":
+        df1[i] = df1[i].astype('int64')
+    else:
+        pass
 
-df1['NumCompaniesWorked'] = df1['NumCompaniesWorked'].astype('int64')
-df1['PercentSalaryHike'] = df1['PercentSalaryHike'].astype('int64')
-df1['WorkLifeBalance'] = df1['WorkLifeBalance'].astype('int64')
-df1['JobSatifaction'] = df1['JobSatisfaction'].astype('int64')
-df1['EnviromentSatisfaction'] = df1['EnvironmentSatisfaction'].astype('int64')
+df1.dtypes # Verificar cambios
 
 list_cat = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object']
 list_oe = ['JobLevel']
 list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) == 2]
-list_dd = ['Department','Education','EducationField','JobRole','MaritalStatus']
+list_dd = ['Department','Education','EducationField','JobRole','MaritalStatus','BusinessTravel']
 
-df1.dtypes
+# Codificación de variables 
 
-# DUMMIES #
-
-def encode_data(df, list_oe, list_le, list_dd):
+def encode_data(df, list_le,list_oe, list_dd):
     df_encoded = df1.copy()
     
     #Get dummies
@@ -70,11 +72,18 @@ def encode_data(df, list_oe, list_le, list_dd):
     
     return df_encoded
 
-df_encoded = encode_data(df1, list_oe, list_le,list_dd)
+df_encoded = encode_data(df1, list_le,list_oe,list_dd)
 
 df3 = df_encoded.copy()
 
+
 df3.dtypes
+
+for i in df3.columns:
+    if df3[i].dtypes == "float64":
+        df3[i] = df3[i].astype('int64')
+    else:
+        pass
 
 #Normalizacion
 
@@ -84,8 +93,10 @@ for col in df3.columns:
         v_num.append(col)
 
 from sklearn.preprocessing import RobustScaler
+from sklearn.preprocessing import MinMaxScaler 
+from sklearn.preprocessing import StandardScaler
 
-scaler = RobustScaler()
+scaler = StandardScaler()
 for col in v_num:
     df3[[col]] = scaler.fit_transform(df3[[col]])
 
@@ -97,16 +108,9 @@ y = df3['Attrition']
 # Selecccion de modelos #
 
 model_gb = GradientBoostingClassifier()
-model_arb = DecisionTreeClassifier(max_depth=4, random_state=42) 
+model_arb = DecisionTreeClassifier() 
 model_log = LogisticRegression( max_iter=1000, random_state=42)
-model_rand = RandomForestClassifier(n_estimators = 100,#o regresation
-                               criterion = 'gini',#error
-                               max_depth = 5,#cuantos arboles
-                               max_leaf_nodes = 10,#profundidad
-                               max_features = None,#nodos finales
-                               oob_score = False,
-                               n_jobs = -1,
-                               random_state = 123)
+model_rand = RandomForestClassifier()
 
 modelos  = list([model_gb,model_arb,model_log,model_rand])
 
@@ -125,7 +129,7 @@ def sel_variables(modelos,X,y,threshold):
     return var_names_ac
 
 
-var_names= sel_variables(modelos,X_esc,y,threshold="2.8*mean") 
+var_names= sel_variables(modelos,X_esc,y,threshold="3.1*mean") 
 var_names.shape
 
 # Al utiizar numeros menores se aceptaban mas variables sin embargo el desempeño seguia siendo el mosmo por lo cual
@@ -156,8 +160,8 @@ def medir_modelos(modelos,scoring,X,y,cv):
     metric_modelos.columns=["gard_boost","decision_tree","random_forest","reg_logistic"]
     return metric_modelos
 
-f1sco_df = medir_modelos(modelos,"f1",X_esc,y,10)  #se definen 10 iteraciones para tener mejor visión del desempeño en el boxplot
-f1dco_var_sel = medir_modelos(modelos,"f1",df4,y,10)
+f1sco_df = medir_modelos(modelos,"f1",X_esc,y,15)  #se definen 10 iteraciones para tener mejor visión del desempeño en el boxplot
+f1dco_var_sel = medir_modelos(modelos,"f1",df4,y,15)
 
 
 f1s=pd.concat([f1sco_df,f1dco_var_sel],axis=1) 
@@ -165,8 +169,6 @@ f1s.columns=['rlog', 'dtree', 'rforest', 'gboosting',
        'rl_Sel', 'dt_sel', 'rf_sel', 'gb_Sel']
 
 
-f1sco_df.plot(kind='box') #### gráfico para modelos todas las varibles
-f1dco_var_sel.plot(kind='box') ### gráfico para modelo variables seleccionadas
 f1s.plot(kind='box') ### gráfico para modelos sel y todas las variables
 
 f1s.mean() 
@@ -251,154 +253,3 @@ train_test_rf
 
 train_test_rf["test_score"].mean()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-"""
-
-# PRUEBA DEL DESEMPEÑO DE CLASIFICADOR CON HIPERPARAMETROS AJUSTADOS #
-
-# Particion de datos para entrenamiento y evaluación
-X_train, X_test, y_train, y_test = train_test_split(X_esc,y,shuffle=True , test_size = 0.3, random_state = 42)
-
-os =  RandomOverSampler()
-x_train_res, y_train_res = os.fit_resample(X_train, y_train)
-
-print ("Distribution before resampling {}".format(Counter(y_train)))
-print ("Distribution labels after resampling {}".format(Counter(y_train_res)))
-
-rf_final.fit(x_train_res,y_train_res)
-
-from sklearn.tree import plot_tree
-plt.figure(figsize=(20,10))
-#plot_tree(rf_final, filled=True, feature_names = x.columns, class_names = ['No','Yes'])
-plt.show()
-
-y_pred = model_arb.predict(X_test)
-
-#Matriz de confusión #
-cm = confusion_matrix(y_test, y_pred)
-cmd = ConfusionMatrixDisplay(cm, display_labels=model_arb.classes_)
-cmd.plot()
-
-print(metrics.classification_report(y_test, model_arb.predict(X_test)))
-
-
-
-x = df4.drop('Attrition', axis = 1)
-y = df4['Attrition']
-
-X_train, X_test, y_train, y_test = train_test_split(x,y,shuffle=True , test_size = 0.3, random_state = 42) 
-
-
-
-# Modelo Gradient Boosting #
-
-model_gb = GradientBoostingClassifier()
-
-model_gb.fit(x_train_res, y_train_res)
-y_pred_gb = model_gb.predict(X_test)
-
-
-# Matriz de confusión y su display
-
-cm = confusion_matrix(y_test, y_pred_gb)
-cmd = ConfusionMatrixDisplay(cm, display_labels=model_gb.classes_)
-cmd.plot()
-plt.show()
-
-# Metricas de desempeño del modelo Gradient Boosting #
-print(metrics.classification_report(y_test, model_gb.predict(X_test)))
-
-# Modelo Arboles de desicion #
-
-model_arb = DecisionTreeClassifier(class_weight='balanced', max_depth=4, random_state=42)
-
-model_arb.fit(x_train_res, y_train_res)
-
-# visualizar el árbol
-
-from sklearn.tree import plot_tree
-from sklearn.model_selection import GridSearchCV
-plt.figure(figsize=(20,10))
-plot_tree(model_arb, filled=True, feature_names = x.columns, class_names = ['No','Yes'])
-plt.show()
-
-y_pred = model_arb.predict(X_test)
-
-#Matriz de confusión #
-cm = confusion_matrix(y_test, y_pred)
-cmd = ConfusionMatrixDisplay(cm, display_labels=model_arb.classes_)
-cmd.plot()
-
-print(metrics.classification_report(y_test, model_arb.predict(X_test)))
-
-
-
-
-#MODELO DE REGRESIÓN LOGISTICA
-
-model_log = LogisticRegression() # definir el modelo de regresión losgistica
-model_log.fit(x_train_res,y_train_res) # entrenar el modelo
-y_pred_train = model_log.predict(x_train_res) # guardar la predicción para train
-y_pred_test = model_log.predict(X_test) # guardar la predicción para test
-
-#Metricas de desempeño modelo de regresión logistica
-# Matriz de confusión:
-cm = confusion_matrix(y_test, y_pred_test, labels=model_log.classes_) # guardar las clases para la matriz de confusión
-disp = ConfusionMatrixDisplay(confusion_matrix=cm,display_labels=model_log.classes_)
-disp.plot();
-print(cm)
-
-
-TP=cm[0,0]
-FP=cm[1,0]
-FN=cm[0,1]
-TN=cm[1,1]
-
-print(f"Accuracy test: {accuracy_score(y_test, y_pred_test)}")
-print(f'Precicion: {TP/(TP+FP)}')
-print(f'Recall (Sensibilidad)): {TP/(TP+FN)}')
-print(f'F1-score:', f1_score(y_test, y_pred_test, average='binary'))
-print(f'Especificidad: {TN/(FP+TN)}')
-
-
-#MODELO RANDOM FOREST
-model = RandomForestClassifier(n_estimators = 100,#o regresation
-                               criterion = 'gini',#error
-                               max_depth = 5,#cuantos arboles
-                               max_leaf_nodes = 10,#profundidad
-                               max_features = None,#nodos finales
-                               oob_score = False,
-                               n_jobs = -1,
-                               random_state = 123)
-model.fit(x_train_res, y_train_res)
-
-# Matriz de confusión para el modelo Random Forest
-cm_rf = confusion_matrix(y_test, model.predict(X_test))
-cmd_rf = ConfusionMatrixDisplay(cm_rf, display_labels=model.classes_)
-cmd_rf.plot()
-plt.show()
-
-print(metrics.classification_report(y_test, model.predict(X_test)))
-
-"""
