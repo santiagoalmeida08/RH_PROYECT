@@ -76,7 +76,6 @@ perf_pred=pd.concat([df['EmployeeID'],df_t,pd_pred],axis=1)
    
 ####LLevar a BD para despliegue 
 #perf_pred.loc[:,['EmployeeID', 'Attrition_17']].to_sql("perf_pred",conn,if_exists="replace") ## llevar predicciones a BD con ID Empleados
-    
 
 ####ver_predicciones_bajas ###
 emp_pred_bajo=perf_pred.sort_values(by=["Attrition_17"],ascending=True).head(10)
@@ -84,11 +83,11 @@ emp_pred_bajo=perf_pred.sort_values(by=["Attrition_17"],ascending=True).head(10)
 emp_pred_bajo.set_index('EmployeeID', inplace=True) 
 pred=emp_pred_bajo.T
     
-coeficientes=pd.DataFrame( np.append(rf_final.intercept_,rf_final.coef_) , columns=['coeficientes'])  ### agregar coeficientes
+  ### agregar coeficientes
 perf_pred.to_excel("salidas\\predicciones.xlsx")   #### exportar todas las  predicciones 
 
 pred.to_excel("salidas\\prediccion.xlsx")   #### exportar predicciones mas bajas y variables explicativas
-coeficientes.to_excel("salidas\\coeficientes.xlsx") ### exportar coeficientes para analizar predicciones
+ ### exportar coeficientes para analizar predicciones
     
 
 
