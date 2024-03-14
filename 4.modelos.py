@@ -49,27 +49,13 @@ df_encoded = fn.encode_data(df1, list_le,list_dd,list_oe)
 df3 = df_encoded.copy()
 df3.columns
 
-for i in df3.columns:
-    if df3[i].dtypes == "float64":
-        df3[i] = df3[i].astype('int64')
-    else:
-        pass
-
-#Normalizacion
-v_num = []
-for col in df3.columns:
-    if df3[col].dtypes == "int64":
-        v_num.append(col)
 scaler = RobustScaler() # se usa robust scaler en el escalado para evitar la influencia de outliers
-for col in v_num:
-    df3[[col]] = scaler.fit_transform(df3[[col]])
+x = scaler.fit_transform(df3) # se escalan las variables predictoras
 
-
-df3.head()
-
-X_esc = df3.drop('Attrition', axis = 1) # elimino la variable objetivo para conservar solo las variables predictoras
+X_esc = pd.DataFrame(x, columns = df3.columns) # se convierte el array en dataframe
+X_esc = X_esc.drop('Attrition', axis = 1) # elimino la variable objetivo para conservar solo las variables predictoras
 y = df3['Attrition'] # variable objetivo
-
+X_esc.columns
 # Selecccion de modelos #
 model_gb = GradientBoostingClassifier()
 model_arb = DecisionTreeClassifier() 

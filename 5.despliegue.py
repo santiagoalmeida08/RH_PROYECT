@@ -25,9 +25,12 @@ scaler=joblib.load("salidas\\scaler.pkl")
 df_pred= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/baseprediccion.csv'
 df = pd.read_csv(df_pred,sep=',')
 df.isnull().sum() # Verificar valores nulos
-df.columns # verificar que tenga las mismas columnas que df4
+ # verificar que tenga las mismas columnas que df4
     ####Otras transformaciones en python (imputación, dummies y seleccion de variables)
-    
+
+df = df.drop(['Over18','StandardHours','EmployeeCount'], axis=1) # Eliminar columnas que no aportan información relevante
+df.columns
+
 def preparar_datos (df):
    
     #######Cargar y procesar nuevos datos ######
@@ -49,11 +52,13 @@ def preparar_datos (df):
     df_dummies = df.copy()
     df_dummies= funciones.encode_data(df, list_le, list_dummies,list_oe)
     df_dummies= df_dummies.loc[:,~df_dummies.columns.isin(['EmployeeID '])]
-    X2=scaler.transform(df_dummies)
+    
+    
+    #X2=scaler.transform(df_dummies)
     #X=pd.DataFrame(X2,columns=df_dummies.columns)
     #X=X[var_names]
     
-    return X2
+    return df_dummies
 
 df_t= preparar_datos(df)
 df_t.columns
