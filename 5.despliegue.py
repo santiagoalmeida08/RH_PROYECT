@@ -28,13 +28,14 @@ df.isnull().sum() # Verificar valores nulos
  # verificar que tenga las mismas columnas que df4
     ####Otras transformaciones en python (imputación, dummies y seleccion de variables)
 
-df = df.drop(['Over18','StandardHours','EmployeeCount'], axis=1) # Eliminar columnas que no aportan información relevante
+
 df.columns
 
 def preparar_datos (df):
    
     #######Cargar y procesar nuevos datos ######
-   
+    df = df.drop(['Over18','StandardHours','EmployeeCount','PerformanceRating','YearsSinceLastPromotion','TotalWorkingYears','YearsAtCompany','fecha','EmployeeID'], axis=1)# Eliminar columnas que no aportan información relevante
+    df['Education'] = df['Education'].replace({1:'Escuela secundaria', 2:'Licenciatura', 3:'Maestria', 4:'Doctorado', 5:'Posdoctorado'})
     
     #### Cargar modelo y listas 
     
@@ -54,11 +55,11 @@ def preparar_datos (df):
     df_dummies= df_dummies.loc[:,~df_dummies.columns.isin(['EmployeeID '])]
     
     
-    #X2=scaler.transform(df_dummies)
-    #X=pd.DataFrame(X2,columns=df_dummies.columns)
-    #X=X[var_names]
+    X2=scaler.transform(df_dummies)
+    X=pd.DataFrame(X2,columns=df_dummies.columns)
+    X=X[var_names]
     
-    return df_dummies
+    return X
 
 df_t= preparar_datos(df)
 df_t.columns
