@@ -94,7 +94,6 @@ pred.to_excel("salidas\\prediccion.xlsx")   #### exportar predicciones mas bajas
 
 
 
+perf_pred.isnull().sum() # Verificar valores nulos
 
-
-
-    
+perf_pred['Attrition_17'].value_counts() # Verificar valores nulos
