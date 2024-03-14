@@ -25,6 +25,7 @@ scaler=joblib.load("salidas\\scaler.pkl")
 df_pred= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/baseprediccion.csv'
 df = pd.read_csv(df_pred,sep=',')
 df.isnull().sum() # Verificar valores nulos
+df.columns
     ####Otras transformaciones en python (imputación, dummies y seleccion de variables)
 df_t= funciones.preparar_datos(df)
 

@@ -40,7 +40,8 @@ df1.dtypes # Verificar cambios
 #Guardamos las variables categoricas en una lista para poder realizar la codificación de las variables acorde a sus variables 
 list_cat = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object']
 list_oe = ['JobLevel']
-list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) == 2]
+#list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) == 2]
+list_le = ['Attrition','Gender']
 list_dd = ['Department','Education','EducationField','JobRole','MaritalStatus','BusinessTravel']
 
 # Codificación de variables 
