@@ -90,7 +90,7 @@ def preparar_datos (df):
     
    
     list_cat=joblib.load("salidas\\list_cat.pkl")
-    list_dummies=joblib.load("salidas\\list_dummies.pkl")
+    list_dummies=joblib.load("salidas\\list_dd.pkl")
     var_names=joblib.load("salidas\\var_names.pkl")
     scaler=joblib.load( "salidas\\scaler.pkl") 
 
