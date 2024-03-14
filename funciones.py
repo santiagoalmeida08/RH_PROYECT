@@ -8,7 +8,8 @@ from sklearn.model_selection import cross_val_predict, cross_val_score, cross_va
 from sklearn.feature_selection import SelectFromModel
 from imblearn.over_sampling import RandomOverSampler
 from sklearn.preprocessing import LabelEncoder, OrdinalEncoder
-
+import joblib
+from sklearn.preprocessing import StandardScaler ## escalar variables 
 
 #FUNCION 1#
 def transformacion(df, variables):
@@ -78,3 +79,28 @@ def encode_data(df, list_le, list_dd,list_oe):
         df_encoded[col] = le.fit_transform(df_encoded[col])
     
     return df_encoded
+
+
+def preparar_datos (df):
+   
+    #######Cargar y procesar nuevos datos ######
+   
+    
+    #### Cargar modelo y listas 
+    
+   
+    list_cat=joblib.load("salidas\\list_cat.pkl")
+    list_dummies=joblib.load("salidas\\list_dummies.pkl")
+    var_names=joblib.load("salidas\\var_names.pkl")
+    scaler=joblib.load( "salidas\\scaler.pkl") 
+
+    ####Ejecutar funciones de transformaciones
+    
+    df=nulos(df)
+    df_dummies=pd.get_dummies(df,columns=list_dummies)
+    df_dummies= df_dummies.loc[:,~df_dummies.columns.isin(['EmployeeID '])]
+    X2=scaler.transform(df_dummies)
+    X=pd.DataFrame(X2,columns=df_dummies.columns)
+    X=X[var_names]
+    
+    return X
