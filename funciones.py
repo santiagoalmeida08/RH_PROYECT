@@ -99,6 +99,7 @@ def preparar_datos (df):
     ####Ejecutar funciones de transformaciones
     
     df=nulos(df)
+    df_dummies = df.copy()
     df_dummies= encode_data(df, list_le, list_dummies,list_oe)
     df_dummies= df_dummies.loc[:,~df_dummies.columns.isin(['EmployeeID '])]
     X2=scaler.transform(df_dummies)
