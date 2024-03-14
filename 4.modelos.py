@@ -40,22 +40,26 @@ df1.dtypes # Verificar cambios
 #Guardamos las variables categoricas en una lista para poder realizar la codificación de las variables acorde a sus variables 
 list_cat = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object']
 list_oe = ['JobLevel']
-list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) == 2 and df1.columns[i] != 'Attrition']
+list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) == 2]
 #list_le = ['Gender']
 list_dd = ['Department','Education','EducationField','JobRole','MaritalStatus','BusinessTravel']
 
 # Codificación de variables 
 df_encoded = fn.encode_data(df1, list_le,list_dd,list_oe)
 df3 = df_encoded.copy()
-df3.columns
+
+y = df3['Attrition'] # variable objetivo
+df3 = df3.drop(['Attrition'], axis = 1) # Eliminar columna EmployeeID ya que no aporta información relevante
+
+
 
 scaler = RobustScaler() # se usa robust scaler en el escalado para evitar la influencia de outliers
 x = scaler.fit_transform(df3) # se escalan las variables predictoras
 
 X_esc = pd.DataFrame(x, columns = df3.columns)
 # se convierte el array en dataframe
-X_esc = X_esc.drop('Attrition', axis = 1) # elimino la variable objetivo para conservar solo las variables predictoras
-y = df3['Attrition'] # variable objetivo
+#X_esc = X_esc.drop('Attrition', axis = 1) # elimino la variable objetivo para conservar solo las variables predictoras
+
 X_esc.columns
 
 
