@@ -19,15 +19,15 @@ import funciones as fn
 data_seleccion= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/base_seleccion2.csv'
 df = pd.read_csv(data_seleccion,sep=',')
 df.isnull().sum() # Verificar valores nulos
+df.dtypes
 
 df1 = df.copy()
 df1 = df1.drop('EmployeeID', axis = 1) # Eliminar columna EmployeeID ya que no aporta información relevante
 df1.info()#Visualizar tipo de datos y verificar variables 
 
 df1['JobLevel'] = df1['JobLevel'].astype('object') #transformar JobLevel a variable categorica
-df1['Attrition'] = df1['Attrition'].astype('object') #transformar Attrition a variable categorica ya que en el analisis la usamos como numerica para analisar la correlación
+#df1['Attrition'] = df1['Attrition'].astype('object') #transformar Attrition a variable categorica ya que en el analisis la usamos como numerica para analisar la correlación
 df1['Attrition'].value_counts()# Cambiar valores de Attrition a 1 y 0
-
 #Cambiamos el formato de las variables a int64 para poder trabajar con ellas en un solo formato
 for i in df1.columns:
     if df1[i].dtypes == "float64":
@@ -41,7 +41,7 @@ df1.dtypes # Verificar cambios
 list_cat = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object']
 list_oe = ['JobLevel']
 #list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) == 2]
-list_le = ['Attrition','Gender']
+list_le = ['Gender']
 list_dd = ['Department','Education','EducationField','JobRole','MaritalStatus','BusinessTravel']
 
 # Codificación de variables 
@@ -114,7 +114,7 @@ cmd.plot()
 #Definicion de parametros para DecisionTreeClassifier
 parameters = {
     'criterion': ['gini', 'entropy'],
-    'splitter': ['best', 'random'],
+    'splitter': ['best', 'random'], #
     'max_depth': [5, 10, 15],
     'min_samples_split': [2, 5, 10],
     'min_samples_leaf': [1, 2, 4],
