@@ -89,7 +89,9 @@ def preparar_datos (df):
     #### Cargar modelo y listas 
     
    
-    list_cat=joblib.load("salidas\\list_cat.pkl")
+    #list_cat=joblib.load("salidas\\list_cat.pkl")
+    list_oe = joblib.load("salidas\\list_oe.pkl")
+    list_le=joblib.load("salidas\\list_le.pkl")
     list_dummies=joblib.load("salidas\\list_dd.pkl")
     var_names=joblib.load("salidas\\var_names.pkl")
     scaler=joblib.load( "salidas\\scaler.pkl") 
@@ -97,7 +99,7 @@ def preparar_datos (df):
     ####Ejecutar funciones de transformaciones
     
     df=nulos(df)
-    df_dummies=pd.get_dummies(df,columns=list_dummies)
+    df_dummies= encode_data(df, list_le, list_dummies,list_oe)
     df_dummies= df_dummies.loc[:,~df_dummies.columns.isin(['EmployeeID '])]
     X2=scaler.transform(df_dummies)
     X=pd.DataFrame(X2,columns=df_dummies.columns)

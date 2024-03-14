@@ -1,6 +1,6 @@
+
 import funciones as funciones  ###archivo de funciones propias
 import pandas as pd ### para manejo de datos
-import sqlite3 as sql
 import joblib
 import openpyxl ## para exportar a excel
 import numpy as np
@@ -24,6 +24,7 @@ scaler=joblib.load("salidas\\scaler.pkl")
 #base de datos de 2016 para predecir 2017
 df_pred= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/baseprediccion.csv'
 df = pd.read_csv(df_pred,sep=',')
+df.isnull().sum() # Verificar valores nulos
     ####Otras transformaciones en python (imputación, dummies y seleccion de variables)
 df_t= funciones.preparar_datos(df)
 
