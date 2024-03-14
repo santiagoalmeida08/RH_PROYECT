@@ -1,1 +1,22 @@
-# EXPLICAR SELECCION DE ALGORITMOS #
+# EXPLICAR SELECCION DE ALGORITMOS
+
+El objetivo del proyecto es hacer un modelo de clasificación binaria que nos indique si un trabajador va a renunciar o no. 
+Esto ayudará a prevenir escenarios no deseados y elaborar un plan de acción buscando así retener el personal y minimizar la 
+rotación del mismo.
+
+Para este problema podemos utilizar varios algoritmos de clasificación; sin embargo buscando entender cuáles podrían ser esas
+posibles causas de abandono, es necesario elegir algoritmos no tan complejos para tener una mayor interpretabilidad de los modelos.
+De esta forma se seleccionaron los siguientes algoritmos para abordar la problemática :
+
+1. Regresión Logística: Este algoritmo se usa para problemas de clasificación binaria tal cual como el que se tiene, es de fácil 
+interpretabilidad y brinda información de cómo cada característica influye en la predicción del modelo. 
+
+2.Árboles de decisión: Se tiene como opción debido a su fácil interpretabilidad y además que presenta información de los diferentes factores
+que pueden influir en la predicción gracias a que cada nodo muestra que decisión se toma y su importancia. 
+
+3.Random Forest : Este modelo compara distintos árboles de decisión por lo cual es un modelo más robusto además ofrece mejores resultados debido
+a que se disminuye la variabilidad en el modelo ya que este promedia los resultados de los distintos árboles de decisión generados, esto mismo hace que sea más difícil su interpretabilidad.  
+
+4.Gradient Boosting : Aunque es un modelo que no aporta mucha interpretabilidad, generalmente su rendimiento y capacidad predictora es superior; se
+selecciona este algoritmo para evaluar el desempeño respecto a los otros modelos y así seleccionar el mejor. 
+

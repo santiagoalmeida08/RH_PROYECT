@@ -84,8 +84,6 @@ def encode_data(df, list_le, list_dd,list_oe):
 def preparar_datos (df):
    
     #######Cargar y procesar nuevos datos ######
-   
-    
     #### Cargar modelo y listas 
     
    

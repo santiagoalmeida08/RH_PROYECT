@@ -40,14 +40,14 @@ df1.dtypes # Verificar cambios
 #Guardamos las variables categoricas en una lista para poder realizar la codificación de las variables acorde a sus variables 
 list_cat = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object']
 list_oe = ['JobLevel']
-#list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) == 2]
-list_le = ['Gender']
+list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) == 2]
+#list_le = ['Gender']
 list_dd = ['Department','Education','EducationField','JobRole','MaritalStatus','BusinessTravel']
 
 # Codificación de variables 
 df_encoded = fn.encode_data(df1, list_le,list_dd,list_oe)
 df3 = df_encoded.copy()
-df3.dtypes
+df3.columns
 
 for i in df3.columns:
     if df3[i].dtypes == "float64":
@@ -113,12 +113,11 @@ cmd.plot()
 
 #Definicion de parametros para DecisionTreeClassifier
 parameters = {
-    'criterion': ['gini', 'entropy'],
-    'splitter': ['best', 'random'], #
+    'criterion': ['gini', 'entropy'],#
     'max_depth': [5, 10, 15],
     'min_samples_split': [2, 5, 10],
     'min_samples_leaf': [1, 2, 4],
-    'max_features': ['auto', 'sqrt', 'log2']} #max_feauters se refiere a la cantidad de variables que se toman en cuenta para hacer la mejor division
+    } #max_feauters se refiere a la cantidad de variables que se toman en cuenta para hacer la mejor division
 
 # create an instance of the randomized search object
 r1 = RandomizedSearchCV(DecisionTreeClassifier(), parameters, cv=5, n_iter=100, random_state=42, n_jobs=-1, scoring='accuracy') 

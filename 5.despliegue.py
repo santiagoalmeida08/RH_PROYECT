@@ -25,9 +25,38 @@ scaler=joblib.load("salidas\\scaler.pkl")
 df_pred= 'https://raw.githubusercontent.com/santiagoalmeida08/RH_PROYECT/main/data_hr_proyect/baseprediccion.csv'
 df = pd.read_csv(df_pred,sep=',')
 df.isnull().sum() # Verificar valores nulos
-df.columns
+df.columns # verificar que tenga las mismas columnas que df4
     ####Otras transformaciones en python (imputación, dummies y seleccion de variables)
-df_t= funciones.preparar_datos(df)
+    
+def preparar_datos (df):
+   
+    #######Cargar y procesar nuevos datos ######
+   
+    
+    #### Cargar modelo y listas 
+    
+   
+    #list_cat=joblib.load("salidas\\list_cat.pkl")
+    list_oe = joblib.load("salidas\\list_oe.pkl")
+    list_le=joblib.load("salidas\\list_le.pkl")
+    list_dummies=joblib.load("salidas\\list_dd.pkl")
+    var_names=joblib.load("salidas\\var_names.pkl")
+    scaler=joblib.load( "salidas\\scaler.pkl") 
+
+    ####Ejecutar funciones de transformaciones
+    
+    df=funciones.nulos(df)
+    df_dummies = df.copy()
+    df_dummies= funciones.encode_data(df, list_le, list_dummies,list_oe)
+    df_dummies= df_dummies.loc[:,~df_dummies.columns.isin(['EmployeeID '])]
+    X2=scaler.transform(df_dummies)
+    #X=pd.DataFrame(X2,columns=df_dummies.columns)
+    #X=X[var_names]
+    
+    return X2
+
+df_t= preparar_datos(df)
+df_t.columns
 
 ##Cargar modelo y predecir
 rf_final = joblib.load("salidas\\rf_final.pkl")
