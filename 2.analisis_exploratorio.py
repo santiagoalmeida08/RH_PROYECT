@@ -104,12 +104,6 @@ df_no_null2 = df_no_null2.drop(['EmployeeCount','StandardHours','PerformanceRati
 df_no_null2['Education'] = df_no_null2['Education'].replace({1:'Escuela secundaria', 2:'Licenciatura', 3:'Maestria', 4:'Doctorado', 5:'Posdoctorado'})
 df_no_null2['Education'].value_counts()
 
-#transformamos las variables a categoricas
-#df_no_null2['JobLevel'] = df_no_null2['JobLevel'].astype('object') # se transforman las variables a categoricas ya que puede ser tratada 
-#df_no_null2['EnvironmentSatisfaction'] = df_no_null2['EnvironmentSatisfaction'].astype('object')
-#df_no_null2['JobSatisfaction'] = df_no_null2['JobSatisfaction'].astype('object')
-#df_no_null2['WorkLifeBalance'] = df_no_null2['WorkLifeBalance'].astype('object')
-
 #Analisis descriptivo de variables numericas #
 
 df_expl_num.describe()
