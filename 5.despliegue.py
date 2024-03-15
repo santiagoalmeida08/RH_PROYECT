@@ -40,22 +40,33 @@ perf_pred['Attrition_17'].value_counts() # Verificar valores nulos
 #perf_pred.loc[:,['EmployeeID', 'Attrition_17']].to_sql("perf_pred",conn,if_exists="replace") ## llevar predicciones a BD con ID Empleados
 
 ####ver_predicciones_bajas ###
-emp_pred_bajo=perf_pred.sort_values(by=["Attrition_17"],ascending=True).head(10)
+#emp_pred_bajo=perf_pred.sort_values(by=["Attrition_17"],ascending=True).head(10)
     
-emp_pred_bajo.set_index('EmployeeID', inplace=True) 
-pred=emp_pred_bajo.T
+#emp_pred_bajo.set_index('EmployeeID', inplace=True) 
+#pred=emp_pred_bajo.T
     
   ### agregar coeficientes
-perf_pred.to_excel("salidas\\predicciones.xlsx")   #### exportar todas las  predicciones 
+#perf_pred.to_excel("salidas\\predicciones.xlsx")   #### exportar todas las  predicciones 
 
 pred.to_excel("salidas\\prediccion.xlsx")   #### exportar predicciones mas bajas y variables explicativas
  ### exportar coeficientes para analizar predicciones
     
 
 
-
-
-
 perf_pred.isnull().sum() # Verificar valores nulos
 
 perf_pred['Attrition_17'].value_counts() # Verificar valores nulos
+
+#Importancia de las variables del modelo
+importances = perf_pred.feature_importances_
+feature_importances_df = pd.DataFrame({'Feature': df_t.columns, 'Importance': importances})
+feature_importances_df = feature_importances_df.sort_values(by='Importance', ascending=False)#Base de datos con la importancia de mayor a menor
+ #Ruta de la decisión
+#perf_pred.tree_.node_count
+#dense_matrix = pd.DataFrame(perf_pred.decision_path(df_t).todense())
+#ruta= pd.concat([perf_pred, dense_matrix,], axis=1)
+#ruta=ruta[ruta["renuncia"]==1]
+#ruta.to_sql("Ruta_decision",con,if_exists="replace") ## llevar predicciones a BD con ID Empleados
+ #Al tener un árbol de este tamaño se hace complejo observar la ruta de decisión
+#Guardado en Excel
+#ruta=ruta.head()

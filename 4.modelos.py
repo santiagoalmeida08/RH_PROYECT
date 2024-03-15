@@ -147,7 +147,8 @@ joblib.dump(scaler, "salidas\\scaler.pkl") ## para normalizar datos con MinMaxSc
 #### convertir resultado de evaluacion entrenamiento y evaluacion en data frame para 
 
 eval=cross_validate(rf_final,df4,y,cv=5,scoring='recall',return_train_score=True) #evaluacion de modelo final con cross validation
-#Como metrica de evaluacion final utilizaremos el recall; debido a que a nos preocupa el numero de falsos negativos, es decir, el numero de empleados que se van y que el modelo no logra predecir
+#Como metrica de evaluacion final utilizaremos el recall; debido a que a nos preocupa el numero de falsos negativos, es decir, el numero 
+#de empleados que se van y que el modelo no logra predecir
 
 train_rf=pd.DataFrame(eval['train_score'])
 test_rf=pd.DataFrame(eval['test_score'])
