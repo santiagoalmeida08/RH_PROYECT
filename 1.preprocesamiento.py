@@ -1,7 +1,7 @@
 
 """En este apartado se analizaran y depuararan los datos nulos de las bases, sus duplicados y se procedera a realizar los respectivos cambios para
     unirlas correctamente, ademas se exportaran las bases depuradas para su posterior uso en el analisis de datos y la prediccion de retiros para el año 2017"""
-
+#
 #1. Preprocesamiento de la base de datos de encuestas de empleados
 #2. Preprocesamiento de la base de datos de retiros
 #3. Preprocesamiento de la base de datos general de empleados
