@@ -17,7 +17,7 @@ def transformacion(df, variables):
         df[i] = df[i].astype('object')
     return df
 
-# FUNCION NULOS# Esta función elimina las variables que tengan más del 10% de valores nulos
+# FUNCION 2# Esta función elimina las variables que tengan más del 10% de valores nulos
 
 def nulos(df):
     for i in df.columns:
@@ -27,14 +27,7 @@ def nulos(df):
             df 
     return df
 
-# FUNCION 3# ????????????????? REVISAR SI SE APLICA LA FUNCION 
-
-def escala(df,variables):
-    for i in variables:
-        df[i] = df[i].replace({'1.0':'Muy insatisfecho', '2.0':'Insatisfecho', '3.0':'Satisfecho', '4.0':'Muy satisfecho'})
-    return df
-
-# FUNCION 4# #Con esta función se seleccionan las variables más importantes para el modelo
+# FUNCION 3# #Con esta función se seleccionan las variables más importantes para el modelo
 def sel_variables(modelos,X,y,threshold): 
     """Recibe como parametros una lista de modelos, la base de datos escalada y codificada, treshold para seleccionar variables"""
     var_names_ac=np.array([])
@@ -48,7 +41,7 @@ def sel_variables(modelos,X,y,threshold):
     
     return var_names_ac
 
-# FUNCION 5# Esta función mide el rendimiento de los modelos
+# FUNCION 4# Esta función mide el rendimiento de los modelos
 
 def medir_modelos(modelos,scoring,X,y,cv):
     "Recibe como parametros una lista de modelos, la metrica con la cual se quiere evaluar su desempeño, la base de datos escalada y codificada, la variable objetivo y el numero de folds para la validación cruzada."
@@ -63,7 +56,7 @@ def medir_modelos(modelos,scoring,X,y,cv):
     metric_modelos.columns=["gard_boost","decision_tree","random_forest","reg_logistic"]
     return metric_modelos   
 
-# FUNCION 6# Esta función codifica las variables dependiendo de su tipo 
+# FUNCION 5# Esta función codifica las variables dependiendo de su tipo 
 def encode_data(df, list_le, list_dd,list_oe): 
     df_encoded = df.copy()   
     "Recibe como parametros la base de datos y las listas de variables que se quieren codificar"
@@ -83,7 +76,7 @@ def encode_data(df, list_le, list_dd,list_oe):
     return df_encoded
 
 
-# FUNCION 7# Esta función prepara la base de datos con informacion nueva para hacer predicciones
+# FUNCION 6# Esta función prepara la base de datos con informacion nueva para hacer predicciones
 
 def preparar_datos (df):
     

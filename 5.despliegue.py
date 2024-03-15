@@ -1,10 +1,18 @@
 
 # Importar librerias necesarias
+"""En este apartado se realizara las predicciones con el modelo entrenado y se exportara a excel las predicciones"""
 
-import funciones as funciones  ###archivo de funciones propias
+#1. Importar elementos necesarios para despliegue
+#2. Cargar base de datos con la que se quiere hacer predicciones
+#3. Transformación de datos para realizar predicciones
+#4. Predicciones
+#5. Importancia de las variables del modelo
+#6. Exportar predicciones a excel
+
+
+import funciones as funciones  #archivo de funciones propias
 import pandas as pd ### para manejo de datos
 import joblib
-import openpyxl ## para exportar a excel
 import numpy as np
 
 # Importar elementos necesarios para despliegue
@@ -23,50 +31,27 @@ df = pd.read_csv(df_pred,sep=',')
 df.isnull().sum() # Verificar valores nulos y variables
 df.columns
 
-df_t=funciones.preparar_datos(df) # Transformación de datos para realizar predicciones
+# Transformación de datos para realizar predicciones
+df_t=funciones.preparar_datos(df) 
 df_t.columns
 
 #Cargar modelo y predecir
 rf_final = joblib.load("salidas\\rf_final.pkl")
-predicciones=rf_final.predict(df_t)
-pd_pred=pd.DataFrame(predicciones, columns=['Attrition_17'])
+predicciones=rf_final.predict(df_t) # se realiza la predicción
+pd_pred=pd.DataFrame(predicciones, columns=['Attrition_17']) # se agrega la variable attrition_17 que es la predicción referente al abandono de los empleados
 
 #Crear base con predicciones
 perf_pred=pd.concat([df['EmployeeID'],df_t,pd_pred],axis=1)
 
 perf_pred['Attrition_17'].value_counts() # Verificar valores nulos
    
-####LLevar a BD para despliegue 
-#perf_pred.loc[:,['EmployeeID', 'Attrition_17']].to_sql("perf_pred",conn,if_exists="replace") ## llevar predicciones a BD con ID Empleados
-
-####ver_predicciones_bajas ###
-#emp_pred_bajo=perf_pred.sort_values(by=["Attrition_17"],ascending=True).head(10)
-    
-#emp_pred_bajo.set_index('EmployeeID', inplace=True) 
-#pred=emp_pred_bajo.T
-    
-  ### agregar coeficientes
-#perf_pred.to_excel("salidas\\predicciones.xlsx")   #### exportar todas las  predicciones 
-
-pred.to_excel("salidas\\prediccion.xlsx")   #### exportar predicciones mas bajas y variables explicativas
- ### exportar coeficientes para analizar predicciones
-    
-
-
-perf_pred.isnull().sum() # Verificar valores nulos
-
-perf_pred['Attrition_17'].value_counts() # Verificar valores nulos
-
-#Importancia de las variables del modelo
-importances = perf_pred.feature_importances_
+# Importancia de las variables del modelo
+importances = rf_final.feature_importances_
 feature_importances_df = pd.DataFrame({'Feature': df_t.columns, 'Importance': importances})
-feature_importances_df = feature_importances_df.sort_values(by='Importance', ascending=False)#Base de datos con la importancia de mayor a menor
- #Ruta de la decisión
-#perf_pred.tree_.node_count
-#dense_matrix = pd.DataFrame(perf_pred.decision_path(df_t).todense())
-#ruta= pd.concat([perf_pred, dense_matrix,], axis=1)
-#ruta=ruta[ruta["renuncia"]==1]
-#ruta.to_sql("Ruta_decision",con,if_exists="replace") ## llevar predicciones a BD con ID Empleados
- #Al tener un árbol de este tamaño se hace complejo observar la ruta de decisión
-#Guardado en Excel
-#ruta=ruta.head()
+feature_importances_df = feature_importances_df.sort_values(by='Importance', ascending=False) #Base de datos con la importancia de mayor a menor
+#En la tabla podemos observar que el salario es la variable más importante para predecir la rotación de empleados; esto es importante ya que como se 
+#mencionó en el análisis exploratorio, los empleados que ganan menos eran los que abandonaban la empresa.
+ 
+# Exportar predicciones e importancia de variables a excel
+perf_pred.to_excel("salidas\\predicciones.xlsx")  #Exportar todas las  predicciones 
+feature_importances_df.to_excel("salidas\\importancia_variables.xlsx") #Exportar importancia de variables
