@@ -34,7 +34,6 @@ df1 = df1.drop('EmployeeID', axis = 1) # Eliminar columna EmployeeID ya que no a
 df1.info()#Visualizar tipo de datos y verificar variables 
 
 df1['JobLevel'] = df1['JobLevel'].astype('object') #transformar JobLevel a variable categorica
-#df1['Attrition'] = df1['Attrition'].astype('object') #transformar Attrition a variable categorica ya que en el analisis la usamos como numerica para analisar la correlación
 df1['Attrition'].value_counts()# Cambiar valores de Attrition a 1 y 0
 
 #Cambiamos el formato de las variables a int64 para poder trabajar con ellas en un solo formato
@@ -51,7 +50,6 @@ df1.dtypes # Verificar cambios
 list_cat = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object']
 list_oe = ['JobLevel']
 list_le = [df1.columns[i] for i in range(len(df1.columns)) if df1[df1.columns[i]].dtype == 'object' and len(df1[df1.columns[i]].unique()) == 2]
-#list_le = ['Gender']
 list_dd = ['Department','Education','EducationField','JobRole','MaritalStatus','BusinessTravel']
 
 # Codificación de variables 
@@ -65,13 +63,8 @@ df3 = df3.drop(['Attrition'], axis = 1) # Eliminar columna EmployeeID ya que no 
 
 scaler = RobustScaler() # se usa robust scaler en el escalado para evitar la influencia de outliers
 x = scaler.fit_transform(df3) # se escalan las variables predictoras
-
 X_esc = pd.DataFrame(x, columns = df3.columns)
-# se convierte el array en dataframe
-#X_esc = X_esc.drop('Attrition', axis = 1) # elimino la variable objetivo para conservar solo las variables predictoras
-
 X_esc.columns
-
 
 # Algorirmos a seleccionar #
 model_gb = GradientBoostingClassifier()
@@ -84,8 +77,8 @@ modelos  = list([model_gb,model_arb,model_log,model_rand])
 
 var_names= fn.sel_variables(modelos,X_esc,y,threshold="3.1*mean") 
 var_names.shape
-# Al utiizar numeros menores se aceptaban mas variables sin embargo el desempeño seguia siendo el mosmo por lo cual
-# Se utilizo un treshold de 3.1 en el cual se trabaja con 4 variables las cuales aportan significia a los modelos
+# Al utiizar en el treshhold numeros menores se aceptaban mas variables sin embargo el desempeño del modelo con todas las variables era muy similar al desempeño con variables seleccionadas
+# Debido a lo anterior se utilizo un treshold de 3.1 en el cual se trabaja con 4 variables las cuales aportan significia a los modelos
 
 df_var_sel = df3[var_names]
 df_var_sel.info()
